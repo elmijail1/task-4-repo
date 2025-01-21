@@ -1,0 +1,42 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(
+    90deg,
+    hsl(250, 90%, 95%) 0%,
+    hsl(350, 90%, 95%) 50%,
+    hsl(300, 90%, 95%) 100%
+  );
+  font-family: "Inter", sans-serif;
+}
+
+form {
+  width: 30rem;
+  background-color: white;
+  padding: 50px;
+  border-radius: 20px;
+  margin-top: 8rem;
+}
+
+@media (max-width: 750px) {
+  form {
+    width: 65%;
+  }
+}
+
+@media (max-width: 500px) {
+  form {
+    width: 100%;
+  }
+}
+
+.Auth__SubButton {
+  background: none;
+  border: none;
+  color: hsl(220, 90%, 50%);
+  text-decoration: underline;
+}
