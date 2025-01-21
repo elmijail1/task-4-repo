@@ -14,6 +14,7 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+/* page: Authorize */
 form {
   width: 30rem;
   background-color: white;
@@ -39,4 +40,35 @@ form {
   border: none;
   color: hsl(220, 90%, 50%);
   text-decoration: underline;
+}
+
+/* page: Home */
+.container-md {
+  margin-top: 8rem;
+  max-height: 10rem;
+}
+
+.Home__Toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  gap: 1rem;
+  background-color: white;
+  padding: 1rem 1rem 1rem 1rem;
+  border-bottom: 1px solid hsl(0, 0%, 90%);
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.table {
+  background-color: white;
+  max-height: 30rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+tbody > tr:nth-of-type(odd) {
+  background-color: hsl(0, 0%, 99%);
+}
+
+.table > tfoot {
+  height: 1.5rem;
 }
