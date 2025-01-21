@@ -1,11 +1,19 @@
 import './App.css'
-import Authorization from './pages/authorization'
+import { BrowserRouter, Routes, Route } from "react-router"
+import Authorization from './pages/Authorization'
+import Home from './pages/Home'
 
 function App() {
 
   return (
     <>
-      <Authorization />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/authorize" element={<Authorization />} />
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
