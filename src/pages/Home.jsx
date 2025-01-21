@@ -5,7 +5,6 @@ export default function Home() {
     return (
         <div
             className="container-md"
-        // style={{ backgroundColor: "black" }}
         >
             <div className="Home__Toolbar">
                 <button className="btn btn-outline-primary"><BsFillLockFill /> Block</button>
