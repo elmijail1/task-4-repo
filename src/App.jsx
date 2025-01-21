@@ -1,10 +1,11 @@
 import './App.css'
+import Authorization from './pages/authorization'
 
 function App() {
 
   return (
     <>
-      <h1>Things to do</h1>
+      <Authorization />
     </>
   )
 }
