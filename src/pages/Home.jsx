@@ -1,8 +1,11 @@
-import { BsFillLockFill, BsFillUnlockFill, BsFillTrashFill } from "react-icons/bs"
+import { BsFillLockFill, BsFillUnlockFill, BsFillTrashFill, BsDoorOpenFill } from "react-icons/bs"
 import { useState, useEffect } from "react"
 import { nanoid } from "nanoid"
+import { useNavigate } from "react-router"
 
 export default function Home() {
+
+    const navigate = useNavigate()
 
     const [tableData, setTableData] = useState()
     const [selectedRows, setSelectedRows] = useState([])
@@ -60,9 +63,18 @@ export default function Home() {
             className="container-md p-1"
         >
             <div className="Home__Toolbar">
-                <button className="btn btn-outline-primary"><BsFillLockFill /> Block</button>
-                <button className="btn btn-outline-primary"><BsFillUnlockFill /></button>
-                <button className="btn btn-outline-danger"><BsFillTrashFill /></button>
+                <div className="Home__ToolbarButtonGroup">
+                    <button className="btn btn-outline-primary"><BsFillLockFill /> Block</button>
+                    <button className="btn btn-outline-primary"><BsFillUnlockFill /></button>
+                    <button className="btn btn-outline-danger"><BsFillTrashFill /></button>
+                </div>
+                <button
+                    className="btn btn-outline-secondary"
+                    onClick={() => navigate("/authorize")} // PLACEHOLDER! DON'T FORGET TO CHANGE
+                >
+                    <BsDoorOpenFill /> Log out
+                </button>
+
             </div>
 
             <table className="table table-responsive table-hover mx-auto">
