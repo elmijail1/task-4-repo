@@ -64,13 +64,14 @@ export default function Home() {
         >
             <div className="Home__Toolbar">
                 <div className="Home__ToolbarButtonGroup">
-                    <button className="btn btn-outline-primary"><BsFillLockFill /> Block</button>
-                    <button className="btn btn-outline-primary"><BsFillUnlockFill /></button>
-                    <button className="btn btn-outline-danger"><BsFillTrashFill /></button>
+                    <button className="btn btn-outline-primary" title="Block"><BsFillLockFill /> Block</button>
+                    <button className="btn btn-outline-primary" title="Unblock"><BsFillUnlockFill /></button>
+                    <button className="btn btn-outline-danger" title="Delete"><BsFillTrashFill /></button>
                 </div>
                 <button
                     className="btn btn-outline-secondary"
                     onClick={() => navigate("/authorize")} // PLACEHOLDER! DON'T FORGET TO CHANGE
+                    title="Log out"
                 >
                     <BsDoorOpenFill /> Log out
                 </button>
