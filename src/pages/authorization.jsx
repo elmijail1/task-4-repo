@@ -1,38 +1,47 @@
 import { useState } from "react"
+import { conditionalTexts } from "../data/authorizeUItexts"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { auth } from "../firebase"
 
 export default function Authorization() {
 
+    const [input, setInput] = useState({ email: "", password: "" })
     const [authType, setAuthType] = useState("login")
+
+    function handleInput(event) {
+        const { name, value } = event.target
+        setInput((prevInput) => ({ ...prevInput, [name]: value }))
+    }
 
     function changeAuthType() {
         setAuthType((prevType) => {
             if (prevType === "login") {
                 return "signup"
-            } else {
+            } else if (prevType === "signup") {
                 return "login"
             }
         })
     }
 
-    const conditionalTexts = {
-        login: {
-            h1: "Login",
-            sub: "Don't have an account? Switch to Sign up!",
-            button: "Log in",
-        },
-        signup: {
-            h1: "Sign up",
-            sub: "Already have an account? Switch to Login!",
-            button: "Sign up",
-        },
-    }
-
     function determineTexts(element) {
         if (authType === "login") {
             return conditionalTexts.login[element]
-        } else {
+        } else if (authType === "signup") {
             return conditionalTexts.signup[element]
         }
+    }
+
+    function handleSignup() {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user
+                console.log(user)
+            })
+            .catch((error) => {
+                const errorCode = error.code
+                const errorMessage = error.message
+                console.log(errorCode, errorMessage)
+            })
     }
 
     return (
@@ -55,6 +64,9 @@ export default function Authorization() {
                         id="exampleInputEmail1"
                         placeholder="name@example.com"
                         aria-describedby="emailHelp"
+                        name="email"
+                        value={input.email}
+                        onChange={handleInput}
                     />
                 </div>
                 <div className="mb-3">
@@ -64,6 +76,9 @@ export default function Authorization() {
                         className="form-control"
                         placeholder="****"
                         id="exampleInputPassword1"
+                        name="password"
+                        value={input.password}
+                        onChange={handleInput}
                     />
                 </div>
                 {/* <div className="mb-3 form-check">
