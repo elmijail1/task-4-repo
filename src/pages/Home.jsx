@@ -15,6 +15,14 @@ export default function Home() {
         }
     }
 
+    function handleCheckAll() {
+        if (selectedRows.length === tableData.length) {
+            setSelectedRows([])
+        } else {
+            setSelectedRows(tableData.map(entry => entry.id))
+        }
+    }
+
     useEffect(() => {
         setTableData([
             {
@@ -60,7 +68,14 @@ export default function Home() {
             <table className="table table-responsive table-hover mx-auto">
                 <thead>
                     <tr>
-                        <th scope="col"><input type="checkbox" /></th>
+                        <th scope="col">
+                            <input
+                                type="checkbox"
+                                checked={selectedRows.length === tableData.length}
+                                onChange={handleCheckAll}
+                                className="Home__Checkbox"
+                            />
+                        </th>
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
                         <th scope="col">Last login time</th>
