@@ -2,6 +2,8 @@ import { BsFillLockFill, BsFillUnlockFill, BsFillTrashFill, BsDoorOpenFill } fro
 import { useState, useEffect } from "react"
 import { nanoid } from "nanoid"
 import { useNavigate } from "react-router"
+import { signOut } from "firebase/auth"
+import { auth } from "../firebase"
 
 export default function Home() {
 
@@ -52,6 +54,10 @@ export default function Home() {
         ])
     }, [])
 
+    function handleSignOut() {
+        signOut(auth).then(navigate("/authorize"))
+    }
+
     if (!tableData) {
         return (
             <p>Loading...</p>
@@ -70,7 +76,7 @@ export default function Home() {
                 </div>
                 <button
                     className="btn btn-outline-secondary"
-                    onClick={() => navigate("/authorize")} // PLACEHOLDER! DON'T FORGET TO CHANGE
+                    onClick={handleSignOut}
                     title="Log out"
                 >
                     <BsDoorOpenFill /> Log out
