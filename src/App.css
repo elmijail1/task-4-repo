@@ -45,7 +45,8 @@ form {
 /* page: Home */
 .container-md {
   margin-top: 8rem;
-  max-height: 10rem;
+  background-color: white;
+  height: 30rem;
 }
 
 .Home__Toolbar {
@@ -63,6 +64,7 @@ form {
   background-color: white;
   max-height: 30rem;
   border-radius: 0 0 0.5rem 0.5rem;
+  width: 98%;
 }
 
 tbody > tr:nth-of-type(odd) {
@@ -71,4 +73,16 @@ tbody > tr:nth-of-type(odd) {
 
 .table > tfoot {
   height: 1.5rem;
+}
+
+.Home__SelectedRow {
+  background-color: hsl(220, 80%, 80%);
+}
+
+tbody > .Home__SelectedRow:nth-of-type(odd) {
+  background-color: hsl(220, 80%, 80%);
+}
+
+.Home__Checkbox {
+  cursor: pointer;
 }
