@@ -52,12 +52,15 @@ form {
 .Home__Toolbar {
   width: 100%;
   display: flex;
-  justify-content: flex-start;
-  gap: 1rem;
+  justify-content: space-between;
   background-color: white;
   padding: 1rem 1rem 1rem 1rem;
   border-bottom: 1px solid hsl(0, 0%, 90%);
-  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.Home__ToolbarButtonGroup {
+  display: flex;
+  gap: 1rem;
 }
 
 .table {
