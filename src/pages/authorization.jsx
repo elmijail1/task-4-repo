@@ -32,7 +32,7 @@ export default function Authorization() {
     }
 
     function handleSignup() {
-        createUserWithEmailAndPassword(auth, email, password)
+        createUserWithEmailAndPassword(auth, input.email, input.password)
             .then((userCredential) => {
                 const user = userCredential.user
                 console.log(user)
@@ -46,7 +46,7 @@ export default function Authorization() {
 
     return (
         <div className="container-fluid">
-            <form className="mx-auto d-flex flex-column justify-content-center">
+            <form className="mx-auto d-flex flex-column justify-content-center" autoComplete="off">
                 <h1 className="text-center h3">{determineTexts("h1")}</h1>
                 <button
                     type="button"
@@ -81,11 +81,13 @@ export default function Authorization() {
                         onChange={handleInput}
                     />
                 </div>
-                {/* <div className="mb-3 form-check">
-                    <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                    <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
-                </div> */}
-                <button type="submit" className="btn btn-primary w-100">{determineTexts("button")}</button>
+                <button
+                    type="button"
+                    className="btn btn-primary w-100"
+                    onClick={handleSignup}
+                >
+                    {determineTexts("button")}
+                </button>
             </form>
         </div >
     )
