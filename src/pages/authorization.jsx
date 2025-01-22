@@ -3,8 +3,9 @@ import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "../firebase"
 import { useNavigate } from "react-router"
+import { Navigate } from "react-router"
 
-export default function Authorization() {
+export default function Authorization({ user }) {
 
     const [input, setInput] = useState({ email: "", password: "" })
     const [authType, setAuthType] = useState("login")
@@ -62,6 +63,10 @@ export default function Authorization() {
                 console.log(errorCode, errorMessage)
             })
         navigate("/")
+    }
+
+    if (user) {
+        return <Navigate to="/"></Navigate>
     }
 
     return (
