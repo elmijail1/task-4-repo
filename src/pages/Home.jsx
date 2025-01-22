@@ -1,10 +1,55 @@
 import { BsFillLockFill, BsFillUnlockFill, BsFillTrashFill } from "react-icons/bs"
+import { useState, useEffect } from "react"
+import { nanoid } from "nanoid"
 
 export default function Home() {
 
+    const [tableData, setTableData] = useState()
+    const [selectedRows, setSelectedRows] = useState([])
+
+    function handleCheck(id) {
+        if (selectedRows.includes(id)) {
+            setSelectedRows(prevRows => prevRows.filter(item => item !== id))
+        } else {
+            setSelectedRows(prevRows => [...prevRows, id])
+        }
+    }
+
+    useEffect(() => {
+        setTableData([
+            {
+                id: 1,
+                name: "Joe",
+                email: "joe@momma.com",
+                lastSeen: "5 min ago",
+                status: "active",
+            },
+            {
+                id: 2,
+                name: "Pop",
+                email: "pop@poppa.com",
+                lastSeen: "1 min ago",
+                status: "active",
+            },
+            {
+                id: 3,
+                name: "Kirk",
+                email: "kirk@rocka.com",
+                lastSeen: "1 hour ago",
+                status: "active",
+            },
+        ])
+    }, [])
+
+    if (!tableData) {
+        return (
+            <p>Loading...</p>
+        )
+    }
+
     return (
         <div
-            className="container-md"
+            className="container-md p-1"
         >
             <div className="Home__Toolbar">
                 <button className="btn btn-outline-primary"><BsFillLockFill /> Block</button>
@@ -23,27 +68,27 @@ export default function Home() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><input type="checkbox" /></td>
-                        <td>Joe</td>
-                        <td>joe@momma.com</td>
-                        <td>5 min ago</td>
-                        <td>Active</td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" /></td>
-                        <td>Pop</td>
-                        <td>pop@poppa.com</td>
-                        <td>1 min ago</td>
-                        <td>Active</td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" /></td>
-                        <td>Kirk</td>
-                        <td>kirk@rocka.com</td>
-                        <td>1 hour ago</td>
-                        <td>Active</td>
-                    </tr>
+                    {
+                        tableData.map((entry) => (
+                            <tr
+                                key={nanoid()}
+                                className={selectedRows.includes(entry.id) ? "Home__SelectedRow" : ""}
+                            >
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedRows.includes(entry.id)}
+                                        onChange={() => handleCheck(entry.id)}
+                                        className="Home__Checkbox"
+                                    />
+                                </td>
+                                <td>{entry.name}</td>
+                                <td>{entry.email}</td>
+                                <td>{entry.lastSeen}</td>
+                                <td>{entry.status[0].toUpperCase() + entry.status.slice(1)}</td>
+                            </tr>
+                        ))
+                    }
                 </tbody>
                 <tfoot>
                     <tr>
