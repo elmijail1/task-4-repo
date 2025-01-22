@@ -2,6 +2,7 @@ import { useState } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "../firebase"
+import { useNavigate } from "react-router"
 
 export default function Authorization() {
 
@@ -31,6 +32,8 @@ export default function Authorization() {
         }
     }
 
+    const navigate = useNavigate()
+
     function handleSignUp() {
         if (!input.email || !input.password) return
         createUserWithEmailAndPassword(auth, input.email, input.password)
@@ -43,6 +46,7 @@ export default function Authorization() {
                 const errorMessage = error.message
                 console.log(errorCode, errorMessage)
             })
+        navigate("/")
     }
 
     function handleSignIn() {
@@ -57,6 +61,7 @@ export default function Authorization() {
                 const errorMessage = error.message
                 console.log(errorCode, errorMessage)
             })
+        navigate("/")
     }
 
     return (
