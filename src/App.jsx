@@ -44,7 +44,7 @@ function App() {
               <Home />
             </ProtectedRoute>
           } />
-          <Route path="/authorize" element={<Authorization />} />
+          <Route path="/authorize" element={<Authorization user={user} />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </BrowserRouter>
