@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "../firebase"
 
 export default function Authorization() {
@@ -31,8 +31,23 @@ export default function Authorization() {
         }
     }
 
-    function handleSignup() {
+    function handleSignUp() {
+        if (!input.email || !input.password) return
         createUserWithEmailAndPassword(auth, input.email, input.password)
+            .then((userCredential) => {
+                const user = userCredential.user
+                console.log(user)
+            })
+            .catch((error) => {
+                const errorCode = error.code
+                const errorMessage = error.message
+                console.log(errorCode, errorMessage)
+            })
+    }
+
+    function handleSignIn() {
+        if (!input.email || !input.password) return
+        signInWithEmailAndPassword(auth, input.email, input.password)
             .then((userCredential) => {
                 const user = userCredential.user
                 console.log(user)
@@ -84,7 +99,7 @@ export default function Authorization() {
                 <button
                     type="button"
                     className="btn btn-primary w-100"
-                    onClick={handleSignup}
+                    onClick={authType === "login" ? handleSignIn : handleSignUp}
                 >
                     {determineTexts("button")}
                 </button>
