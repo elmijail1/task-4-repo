@@ -7,7 +7,9 @@ import { Navigate } from "react-router"
 
 export default function Authorization({ user }) {
 
-    const [input, setInput] = useState({ email: "", password: "" })
+
+
+    const [input, setInput] = useState({ name: "", email: "", password: "" })
     const [authType, setAuthType] = useState("login")
 
     function handleInput(event) {
@@ -81,14 +83,29 @@ export default function Authorization({ user }) {
                     {determineTexts("sub")}
                 </button>
 
-                <div className="mb-3 mt-5">
+                {
+                    authType === "signup" &&
+                    <div className="mb-3 mt-5">
+                        <label htmlFor="inputName" className="form-label">Name</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="inputName"
+                            placeholder="Joe"
+                            name="name"
+                            value={input.name}
+                            onChange={handleInput}
+                        />
+                    </div>
+                }
+                <div className={`mb-3 ${authType === "login" ? "mt-5" : ""}`}>
                     <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
                     <input
                         type="email"
                         className="form-control"
                         id="exampleInputEmail1"
                         placeholder="name@example.com"
-                        aria-describedby="emailHelp"
+
                         name="email"
                         value={input.email}
                         onChange={handleInput}
