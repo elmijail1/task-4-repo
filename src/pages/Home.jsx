@@ -4,8 +4,21 @@ import { nanoid } from "nanoid"
 import { useNavigate } from "react-router"
 import { signOut } from "firebase/auth"
 import { auth } from "../firebase"
+// db management
+import { db } from "../firebase"
+import { collection, getDocs } from "firebase/firestore"
 
 export default function Home() {
+
+    // db management
+    // IT WORKS
+    const usersCollectionRef = collection(db, "users")
+    async function getSnapshot() {
+        const snapshot = await getDocs(usersCollectionRef)
+        const users = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+        console.log(users)
+    }
+    getSnapshot()
 
     const navigate = useNavigate()
 
