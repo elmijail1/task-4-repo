@@ -18,7 +18,7 @@ export default function Home() {
         const users = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
         console.log(users)
     }
-    getSnapshot()
+    // getSnapshot()
 
     const navigate = useNavigate()
 
