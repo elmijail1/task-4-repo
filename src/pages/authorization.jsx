@@ -2,7 +2,7 @@ import { useState } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, deleteUser } from "firebase/auth"
 import { auth, db } from "../firebase"
-import { doc, setDoc, collection, getDocs, deleteDoc } from "firebase/firestore"
+import { doc, setDoc, collection, getDocs } from "firebase/firestore"
 import { useNavigate } from "react-router"
 import { Navigate } from "react-router"
 
@@ -79,8 +79,8 @@ export default function Authorization({ user }) {
             const usersCollectionRef = collection(db, "users")
             try {
                 const snapshot = await getDocs(usersCollectionRef)
-                const activeUsersIDs = snapshot.docs.map(user => user.id)
-                if (!activeUsersIDs.includes(user.uid)) {
+                const activeUsersIDs = snapshot.docs.map(user => user)
+                if (!activeUsersIDs.map(user => user.id).includes(user.uid)) {
                     try {
                         await deleteUser(getAuth().currentUser)
                     } catch (error) {
@@ -89,10 +89,8 @@ export default function Authorization({ user }) {
                     setUserStatus("deleted")
                     setInput({ name: "", email: "", password: "" })
                     console.log("Your account has been deleted, lol")
-                    // navigate("/authorize")
                 } else {
                     setUserStatus("active")
-                    // navigate("/")
                 }
             } catch (error) {
                 console.error(`Error with DB: ${error}`)
