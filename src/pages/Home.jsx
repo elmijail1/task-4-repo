@@ -9,17 +9,6 @@ import { db } from "../firebase"
 import { collection, getDocs } from "firebase/firestore"
 
 export default function Home() {
-
-    // db management
-    // IT WORKS
-    const usersCollectionRef = collection(db, "users")
-    async function getSnapshot() {
-        const snapshot = await getDocs(usersCollectionRef)
-        const users = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
-        console.log(users)
-    }
-    // getSnapshot()
-
     const navigate = useNavigate()
 
     const [tableData, setTableData] = useState()
@@ -41,30 +30,16 @@ export default function Home() {
         }
     }
 
+    const usersCollectionRef = collection(db, "users")
+    async function poplateTable() {
+        const snapshot = await getDocs(usersCollectionRef)
+        const users = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+        setTableData(users)
+    }
+
     useEffect(() => {
-        setTableData([
-            {
-                id: 1,
-                name: "Joe",
-                email: "joe@momma.com",
-                lastSeen: "5 min ago",
-                status: "active",
-            },
-            {
-                id: 2,
-                name: "Pop",
-                email: "pop@poppa.com",
-                lastSeen: "1 min ago",
-                status: "active",
-            },
-            {
-                id: 3,
-                name: "Kirk",
-                email: "kirk@rocka.com",
-                lastSeen: "1 hour ago",
-                status: "active",
-            },
-        ])
+        poplateTable()
+        console.log("Table Population effect fired")
     }, [])
 
     function handleSignOut() {
