@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router"
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './firebase'
 // pages & components
-import Authorization from './pages/Authorization'
+import Authorization from './pages/authorization'
 import Home from './pages/Home'
 import ProtectedRoute from './components/ProtectedRoute'
 
