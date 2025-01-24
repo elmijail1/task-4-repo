@@ -48,6 +48,7 @@ export default function Authorization({ user }) {
                     navigate("/")
                 }, 3000)
                 try {
+                    // the 3rd argument below uses the ID assigned to an Auth User to a related entry to the Firestore, it's very important
                     await setDoc(doc(db, "users", userid), {
                         name: input.name,
                         email: input.email,
