@@ -6,7 +6,7 @@ import { signOut } from "firebase/auth"
 import { auth } from "../firebase"
 // db management
 import { db } from "../firebase"
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"
+import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
 
 export default function Home() {
     const navigate = useNavigate()
@@ -53,12 +53,46 @@ export default function Home() {
                     await deleteDoc(doc(db, "users", selectedRows[i]))
                     console.log(`Doc deleted`)
                     console.log(selectedRows)
-                    setSelectedRows([])
-                    populateTable()
-                } catch (e) {
-                    console.error(`Error: ${e}`)
+                } catch (error) {
+                    console.error(`Error with deletion: ${error}`)
                 }
             }
+            setSelectedRows([])
+            populateTable()
+        }
+        else {
+            console.log("Nothing has been selected")
+        }
+    }
+
+    async function blockSelection() {
+        if (selectedRows && selectedRows.length > 0) {
+            for (let i = 0; i < selectedRows.length; i++) {
+                try {
+                    await updateDoc(doc(db, "users", selectedRows[i]), { status: "blocked" })
+                    console.log(`Doc blocked`)
+                } catch (error) {
+                    console.error(`Error with deletion: ${error}`)
+                }
+            }
+            populateTable()
+        }
+        else {
+            console.log("Nothing has been selected")
+        }
+    }
+
+    async function unblockSelection() {
+        if (selectedRows && selectedRows.length > 0) {
+            for (let i = 0; i < selectedRows.length; i++) {
+                try {
+                    await updateDoc(doc(db, "users", selectedRows[i]), { status: "active" })
+                    console.log(`Doc unblocked`)
+                } catch (error) {
+                    console.error(`Error with deletion: ${error}`)
+                }
+            }
+            populateTable()
         }
         else {
             console.log("Nothing has been selected")
@@ -78,8 +112,20 @@ export default function Home() {
         >
             <div className="Home__Toolbar">
                 <div className="Home__ToolbarButtonGroup">
-                    <button className="btn btn-outline-primary" title="Block"><BsFillLockFill /> Block</button>
-                    <button className="btn btn-outline-primary" title="Unblock"><BsFillUnlockFill /></button>
+                    <button
+                        className="btn btn-outline-primary"
+                        title="Block"
+                        onClick={blockSelection}
+                    >
+                        <BsFillLockFill /> Block
+                    </button>
+                    <button
+                        className="btn btn-outline-primary"
+                        title="Unblock"
+                        onClick={unblockSelection}
+                    >
+                        <BsFillUnlockFill />
+                    </button>
                     <button className="btn btn-outline-danger"
                         title="Delete"
                         onClick={deleteSelection}
