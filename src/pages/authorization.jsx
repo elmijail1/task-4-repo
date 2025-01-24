@@ -75,25 +75,27 @@ export default function Authorization({ user }) {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, input.email, input.password)
             const user = userCredential.user
-            console.log(user)
             const usersCollectionRef = collection(db, "users")
             try {
                 const snapshot = await getDocs(usersCollectionRef)
-                const activeUsersIDs = snapshot.docs.map(user => user)
-                if (!activeUsersIDs.map(user => user.id).includes(user.uid)) {
+                const activeUsersIDs = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+                if (!activeUsersIDs.map(entry => entry.id).includes(user.uid)) {
                     try {
                         await deleteUser(getAuth().currentUser)
                     } catch (error) {
-                        console.error(`Error with deletion: ${error}`)
+                        console.error(`Error with deletion: ${error} `)
                     }
                     setUserStatus("deleted")
                     setInput({ name: "", email: "", password: "" })
                     console.log("Your account has been deleted, lol")
+                } else if (activeUsersIDs.filter(entry => entry.id === user.uid)[0].status === "blocked") {
+                    setUserStatus("blocked")
+                    console.log("Your account has been blocked, lol")
                 } else {
                     setUserStatus("active")
                 }
             } catch (error) {
-                console.error(`Error with DB: ${error}`)
+                console.error(`Error with DB: ${error} `)
             }
         }
         catch (error) {
@@ -135,7 +137,7 @@ export default function Authorization({ user }) {
                         />
                     </div>
                 }
-                <div className={`mb-3 ${authType === "login" ? "mt-5" : ""}`}>
+                <div className={`mb - 3 ${authType === "login" ? "mt-5" : ""} `}>
                     <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
                     <input
                         type="email"
