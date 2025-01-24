@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "../firebase"
+import { auth, db } from "../firebase"
+import { doc, setDoc } from "firebase/firestore"
 import { useNavigate } from "react-router"
 import { Navigate } from "react-router"
 
@@ -37,19 +38,29 @@ export default function Authorization({ user }) {
 
     const navigate = useNavigate()
 
+    // it creates an entry in both Auth Users & Firestore's collection "/users"
     function handleSignUp() {
         if (!input.email || !input.password) return
         createUserWithEmailAndPassword(auth, input.email, input.password)
-            .then((userCredential) => {
-                const user = userCredential.user
-                console.log(user)
+            .then(async (userCredential) => {
+                const userid = userCredential.user.uid
+                setTimeout(() => {
+                    navigate("/")
+                }, 3000)
+                try {
+                    await setDoc(doc(db, "users", userid), {
+                        name: input.name,
+                        email: input.email,
+                        lastSeen: "Just now",
+                        status: "active",
+                    })
+                } catch (e) {
+                    console.error("Error adding document: ", e)
+                }
             })
             .catch((error) => {
-                const errorCode = error.code
-                const errorMessage = error.message
-                console.log(errorCode, errorMessage)
+                console.log(error)
             })
-        navigate("/")
     }
 
     function handleSignIn() {
