@@ -6,7 +6,7 @@ import { signOut } from "firebase/auth"
 import { auth } from "../firebase"
 // db management
 import { db } from "../firebase"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"
 
 export default function Home() {
     const navigate = useNavigate()
@@ -30,21 +30,41 @@ export default function Home() {
         }
     }
 
+    function handleSignOut() {
+        signOut(auth).then(navigate("/authorize"))
+    }
+
     const usersCollectionRef = collection(db, "users")
-    async function poplateTable() {
+    async function populateTable() {
         const snapshot = await getDocs(usersCollectionRef)
         const users = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
         setTableData(users)
     }
 
     useEffect(() => {
-        poplateTable()
+        populateTable()
         console.log("Table Population effect fired")
     }, [])
 
-    function handleSignOut() {
-        signOut(auth).then(navigate("/authorize"))
+    async function deleteSelection() {
+        if (selectedRows && selectedRows.length > 0) {
+            for (let i = 0; i < selectedRows.length; i++) {
+                try {
+                    await deleteDoc(doc(db, "users", selectedRows[i]))
+                    console.log(`Doc deleted`)
+                    console.log(selectedRows)
+                    setSelectedRows([])
+                    populateTable()
+                } catch (e) {
+                    console.error(`Error: ${e}`)
+                }
+            }
+        }
+        else {
+            console.log("Nothing has been selected")
+        }
     }
+
 
     if (!tableData) {
         return (
@@ -60,7 +80,12 @@ export default function Home() {
                 <div className="Home__ToolbarButtonGroup">
                     <button className="btn btn-outline-primary" title="Block"><BsFillLockFill /> Block</button>
                     <button className="btn btn-outline-primary" title="Unblock"><BsFillUnlockFill /></button>
-                    <button className="btn btn-outline-danger" title="Delete"><BsFillTrashFill /></button>
+                    <button className="btn btn-outline-danger"
+                        title="Delete"
+                        onClick={deleteSelection}
+                    >
+                        <BsFillTrashFill />
+                    </button>
                 </div>
                 <button
                     className="btn btn-outline-secondary"
@@ -78,7 +103,7 @@ export default function Home() {
                         <th scope="col">
                             <input
                                 type="checkbox"
-                                checked={selectedRows.length === tableData.length}
+                                checked={selectedRows?.length === tableData.length}
                                 onChange={handleCheckAll}
                                 className="Home__Checkbox"
                             />
