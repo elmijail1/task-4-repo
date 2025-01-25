@@ -14,6 +14,23 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+/* both pages */
+.StatusNotification {
+  margin-top: 1rem;
+  position: relative;
+}
+
+.StatusNotificationCross {
+  position: absolute;
+  font-size: 1.6rem;
+  color: inherit;
+  top: -0.5rem;
+  right: 0.3rem;
+  rotate: 45deg;
+  background: none;
+  border: none;
+}
+
 /* page: Authorize */
 form {
   width: 30rem;
@@ -47,22 +64,6 @@ form {
   margin-bottom: 1rem;
   color: hsl(0, 100%, 50%);
   font-weight: 500;
-}
-
-.Authorize__StatusNotification {
-  margin-top: 1rem;
-  position: relative;
-}
-
-.Authroize__StatusNotificationCross {
-  position: absolute;
-  font-size: 1.6rem;
-  color: inherit;
-  top: -0.5rem;
-  right: 0.3rem;
-  rotate: 45deg;
-  background: none;
-  border: none;
 }
 
 /* page: Home */
