@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, deleteUser } from "firebase/auth"
+import { signInWithEmailAndPassword, getAuth, deleteUser } from "firebase/auth"
 import { auth, db } from "../firebase"
-import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore"
+import { doc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { Navigate } from "react-router"
 import validateInput from "../utilities/Authorize/validateInput"
 import registerFocus from "../utilities/Authorize/registerFocus"
 import determineStatusMessage from "../utilities/Authorize/determineStatusMessage"
 import generateRightLengthPassword from "../utilities/Authorize/generateRightLengthPassword"
+import handleSignUp from "../utilities/Authorize/handleSignUp"
 
 
 export default function Authorization({ user }) {
@@ -42,42 +43,6 @@ export default function Authorization({ user }) {
     }
 
     const [userStatus, setUserStatus] = useState()
-
-    // it creates an entry in both Auth Users & Firestore's collection "/users"
-    async function handleSignUp() {
-        const fields = ["email", "password", "name"]
-        for (let field of fields) {
-            validateInput(field, input, setErrorMessages)
-            console.log(errorMessages)
-        }
-        if (!validateInput("email", input, setErrorMessages) || !validateInput("password", input, setErrorMessages) || !validateInput("name", input, setErrorMessages)) {
-            setFirstFocus({ name: true, email: true, password: true })
-            setUserStatus("not validated")
-            return
-        }
-        try {
-            let rightLengthPassword = generateRightLengthPassword(input)
-            const userCredential = await createUserWithEmailAndPassword(auth, input.email, rightLengthPassword)
-            const user = userCredential.user
-            try {
-                await setDoc(doc(db, "users", user.uid), {
-                    name: input.name,
-                    email: input.email,
-                    lastSeen: new Date(),
-                    status: "active",
-                })
-                setUserStatus("active")
-            } catch (error) {
-                console.error(`Creating a DB record – Error code: ${error.code}`)
-                console.error(`Creating a DB record – Error message: ${error.message}`)
-            }
-        }
-        catch (error) {
-            console.error(`Signing up – Error code: ${error.code}`)
-            console.error(`Signing up – Error message: ${error.message}`)
-            setUserStatus("duplicate email")
-        }
-    }
 
     // It first checks whether the user's been deleted from the DB
     // If it has, it deletes it from the Auth table too
@@ -212,7 +177,13 @@ export default function Authorization({ user }) {
                 <button
                     type="button"
                     className="btn btn-primary w-100"
-                    onClick={authType === "login" ? handleSignIn : handleSignUp}
+                    onClick={authType === "login"
+                        ? handleSignIn
+                        : () => handleSignUp(input,
+                            setErrorMessages,
+                            setFirstFocus,
+                            setUserStatus
+                        )}
                 >
                     {determineTexts("button")}
                 </button>
