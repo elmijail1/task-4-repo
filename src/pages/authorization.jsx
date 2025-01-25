@@ -230,10 +230,10 @@ export default function Authorization({ user }) {
                     {determineTexts("button")}
                 </button>
                 {userStatus &&
-                    <div className={`alert ${userStatus === "deleted" ? "alert-danger" : "alert-warning"} Authorize__StatusNotification`}>
+                    <div className={`alert ${userStatus === "deleted" ? "alert-danger" : "alert-warning"} StatusNotification`}>
                         {determineStatusMessage()}
                         <button
-                            className="Authroize__StatusNotificationCross"
+                            className="StatusNotificationCross"
                             onClick={() => setUserStatus()}
                         >
                             +
