@@ -105,8 +105,7 @@ export default function Authorization({ user }) {
         }
     }
 
-    const [statusMessage, setStatusMessage] = useState()
-    const [inputErrorMessage, setInputErrorMessage] = useState()
+    const [inputFocus, setInputFocus] = useState()
 
     function determineStatusMessage() {
         if (userStatus === "blocked") {
@@ -116,6 +115,26 @@ export default function Authorization({ user }) {
         }
     }
 
+    function determineErrorMessage() {
+        if (inputFocus === "email") {
+            let emailValid = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(input.email)
+            if (!emailValid) {
+                return "Email must look like this: name@example.com"
+            }
+        } else if (inputFocus === "name") {
+            if (input.name.length < 1) {
+                return "Name must be at least 1 char long"
+            } else if (/(?=.*[A-Za-z0-9])(?=.*[-+_!@#$%^&*.,?])/i.test(input.name)) {
+                return "Name must contain only Latin script (both cases), numbers, and special symbols"
+            }
+        } else if (inputFocus === "password") {
+            if (input.password.length < 1) {
+                return "Password must be at least 1 char long"
+            } else if (/(?=.*[A-Za-z0-9])(?=.*[-+_!@#$%^&*.,?])/i.test(input.password)) {
+                return "Password must contain only Latin script (both cases), numbers, and special symbols"
+            }
+        }
+    }
 
     if (user && userStatus === "active") {
         return <Navigate to="/"></Navigate>
@@ -135,18 +154,27 @@ export default function Authorization({ user }) {
 
                 {
                     authType === "signup" &&
-                    <div className="mb-3 mt-5">
-                        <label htmlFor="inputName" className="form-label">Name</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="inputName"
-                            placeholder="Joe"
-                            name="name"
-                            value={input.name}
-                            onChange={handleInput}
-                        />
-                    </div>
+                    <>
+                        <div className="mb-3 mt-5">
+                            <label htmlFor="inputName" className="form-label">Name</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="inputName"
+                                placeholder="Joe"
+                                name="name"
+                                value={input.name}
+                                onChange={handleInput}
+                                onFocus={() => setInputFocus("name")}
+                            />
+                        </div>
+                        {
+                            inputFocus === "name" &&
+                            <div className="Authroize__InputErrorMessage">
+                                {determineErrorMessage()}
+                            </div>
+                        }
+                    </>
                 }
                 <div className={`mb - 3 ${authType === "login" ? "mt-5" : ""} `}>
                     <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
@@ -155,11 +183,17 @@ export default function Authorization({ user }) {
                         className="form-control"
                         id="exampleInputEmail1"
                         placeholder="name@example.com"
-
                         name="email"
                         value={input.email}
                         onChange={handleInput}
+                        onFocus={() => setInputFocus("email")}
                     />
+                    {
+                        inputFocus === "email" &&
+                        <div className="Authroize__InputErrorMessage">
+                            {determineErrorMessage()}
+                        </div>
+                    }
                 </div>
                 <div className="mb-3">
                     <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
@@ -171,7 +205,14 @@ export default function Authorization({ user }) {
                         name="password"
                         value={input.password}
                         onChange={handleInput}
+                        onFocus={() => setInputFocus("password")}
                     />
+                    {
+                        inputFocus === "password" &&
+                        <div className="Authroize__InputErrorMessage">
+                            {determineErrorMessage()}
+                        </div>
+                    }
                 </div>
                 <button
                     type="button"
