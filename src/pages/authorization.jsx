@@ -15,6 +15,7 @@ export default function Authorization({ user }) {
 
     function handleInput(event) {
         const { name, value } = event.target
+        console.log(name)
         setInput((prevInput) => ({ ...prevInput, [name]: value }))
     }
 
@@ -124,8 +125,6 @@ export default function Authorization({ user }) {
         }
     }
 
-    const [inputFocus, setInputFocus] = useState()
-
     function determineStatusMessage() {
         if (userStatus === "blocked") {
             return "Your account has been blocked. Ask another user to unblock you."
@@ -137,29 +136,51 @@ export default function Authorization({ user }) {
             return "An account linked to this email already exists. Either log in to your account or use another email to create a new one."
         } else if (userStatus === "missing data") {
             return "You haven't provided all the required data. Please fill out all the forms before trying to submit the form again."
+        } else if (userStatus === "not validated") {
+            return "Some of the data you've provided hasn't been validated. Check your input before tryig to submit the form again."
         }
     }
 
-    function determineErrorMessage() {
-        if (inputFocus === "email") {
-            let emailValid = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(input.email)
-            if (!emailValid) {
-                return "Email must look like this: name@example.com"
-            }
-        } else if (inputFocus === "name") {
-            if (input.name.length < 1) {
-                return "Name must be at least 1 char long"
-            } else if (!/(^[A-Za-z0-9]+$)/i.test(input.name)) {
-                return "Name must contain only Latin script (both cases) and numbers"
-            }
-        } else if (inputFocus === "password") {
-            if (input.password.length < 1) {
-                return "Password must be at least 1 char long"
-            } else if (!/(^[A-Za-z0-9!#$%&? "]+$)/i.test(input.password)) {
-                return "Password must contain only Latin script (both cases) and numbers"
-            }
+    const [firstFocus, setFirstFocus] = useState({ name: false, email: false, password: false })
+    const inputValidators = {
+        email: {
+            minLength: 6,
+            maxLength: 20,
+            patternRegEx: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+            patternText: "like name@gmail.com"
+        },
+        password: {
+            minLength: 1,
+            maxLength: 20,
+            patternRegEx: /(^[A-Za-z0-9!#$%&? "]+$)/i,
+            patternText: "Latin letters, numbers, and these symbols: !, #, $, %, &, ?, \""
+        },
+        name: {
+            minLength: 1,
+            maxLength: 20,
+            patternRegEx: /(^[A-Za-z0-9]+$)/i,
+            patternText: "Latin letters and numbers"
         }
     }
+    function registerFocus(event) {
+        if (!firstFocus[event.target.name]) {
+            setFirstFocus(prevFocus => ({ ...prevFocus, [event.target.name]: true }))
+            console.log(`${event.target.name} got its first focus!`)
+        }
+    }
+
+    function validateInput(inpField) {
+        const capName = `${inpField[0].toUpperCase()}${inpField.slice(1)}`
+        const inpVal = input[inpField]
+        if (inpVal.length < 1) {
+            return `${capName} can't be empty.`
+        } else if (inpVal.length < inputValidators[inpField].minLength || inpVal.length > inputValidators[inpField].maxLength) {
+            return `${capName} must be between ${inputValidators[inpField].minLength} & ${inputValidators[inpField].maxLength} characters.`
+        } else if (!inputValidators[inpField].patternRegEx.test(inpVal)) {
+            return `${capName} must be ${inputValidators[inpField].patternText}`
+        }
+    }
+
 
     if (user && userStatus === "active") {
         return <Navigate to="/"></Navigate>
@@ -190,14 +211,13 @@ export default function Authorization({ user }) {
                                 name="name"
                                 value={input.name}
                                 onChange={handleInput}
-                                onFocus={() => setInputFocus("name")}
-                                onBlur={() => setInputFocus()}
+                                onFocus={registerFocus}
                             />
                         </div>
                         {
-                            inputFocus === "name" &&
+                            firstFocus.name &&
                             <div className="Authroize__InputErrorMessage">
-                                {determineErrorMessage()}
+                                {validateInput("name")}
                             </div>
                         }
                     </>
@@ -212,13 +232,12 @@ export default function Authorization({ user }) {
                         name="email"
                         value={input.email}
                         onChange={handleInput}
-                        onFocus={() => setInputFocus("email")}
-                        onBlur={() => setInputFocus()}
+                        onFocus={registerFocus}
                     />
                     {
-                        inputFocus === "email" &&
+                        firstFocus.email &&
                         <div className="Authroize__InputErrorMessage">
-                            {determineErrorMessage()}
+                            {validateInput("email")}
                         </div>
                     }
                 </div>
@@ -232,13 +251,12 @@ export default function Authorization({ user }) {
                         name="password"
                         value={input.password}
                         onChange={handleInput}
-                        onFocus={() => setInputFocus("password")}
-                        onBlur={() => setInputFocus()}
+                        onFocus={registerFocus}
                     />
                     {
-                        inputFocus === "password" &&
+                        firstFocus.password &&
                         <div className="Authroize__InputErrorMessage">
-                            {determineErrorMessage()}
+                            {validateInput("password")}
                         </div>
                     }
                 </div>
