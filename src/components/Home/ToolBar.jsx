@@ -2,9 +2,17 @@ import { BsFillLockFill, BsFillUnlockFill, BsFillTrashFill, BsDoorOpenFill } fro
 import ToolBarButton from "./ToolBarButton"
 import handleSignOut from "../../utilities/Home/handleSignout";
 import { useNavigate } from "react-router";
+import { blockSelection, unblockSelection, deleteSelection } from "../../utilities/Home/handleSelection"
 
 
-export default function ToolBar({ blockSelection, unblockSelection, deleteSelection }) {
+export default function ToolBar({
+    usersCollectionRef,
+    selectedRows,
+    setSelectedRows,
+    tableData,
+    setLatestAction,
+    setTableData
+}) {
     const navigate = useNavigate();
 
     return (
@@ -13,21 +21,43 @@ export default function ToolBar({ blockSelection, unblockSelection, deleteSelect
                 <ToolBarButton
                     classNameValue="btn btn-outline-primary"
                     titleValue="Block"
-                    onClickAction={blockSelection}
+                    onClickAction={() => blockSelection(
+                        usersCollectionRef,
+                        selectedRows,
+                        tableData,
+                        setLatestAction,
+                        setTableData,
+                        navigate
+                    )}
                 >
                     <BsFillLockFill /> Block
                 </ToolBarButton>
                 <ToolBarButton
                     classNameValue="btn btn-outline-primary"
                     titleValue="Unblock"
-                    onClickAction={unblockSelection}
+                    onClickAction={() => unblockSelection(
+                        usersCollectionRef,
+                        selectedRows,
+                        tableData,
+                        setLatestAction,
+                        setTableData,
+                        navigate
+                    )}
                 >
                     <BsFillUnlockFill />
                 </ToolBarButton>
                 <ToolBarButton
                     classNameValue="btn btn-outline-danger"
                     titleValue="Delete"
-                    onClickAction={deleteSelection}
+                    onClickAction={() => deleteSelection(
+                        usersCollectionRef,
+                        selectedRows,
+                        setSelectedRows,
+                        tableData,
+                        setLatestAction,
+                        setTableData,
+                        navigate
+                    )}
                 >
                     <BsFillTrashFill />
                 </ToolBarButton>
