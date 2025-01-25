@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, de
 import { auth, db } from "../firebase"
 import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { Navigate } from "react-router"
-import { inputValidators } from "../data/inputValidators"
+import validateInput from "../utilities/Home/Authorize/validateInput"
 
 
 export default function Authorization({ user }) {
@@ -54,7 +54,7 @@ export default function Authorization({ user }) {
 
     // it creates an entry in both Auth Users & Firestore's collection "/users"
     async function handleSignUp() {
-        if (validateInput("email") || validateInput("password") || validateInput("name")) {
+        if (validateInput("email", input, setUserStatus) || validateInput("password", input, setUserStatus) || validateInput("name", input, setUserStatus)) {
             setFirstFocus({ name: true, email: true, password: true })
             setUserStatus("not validated")
             return
@@ -87,7 +87,7 @@ export default function Authorization({ user }) {
     // If it has, it deletes it from the Auth table too
     // If it's been blocked, it lets you know that you're blocked
     async function handleSignIn() {
-        if (validateInput("email") || validateInput("password")) {
+        if (validateInput("email", input, setUserStatus) || validateInput("password", input, setUserStatus)) {
             setFirstFocus(prevFocus => ({ ...prevFocus, email: true, password: true }))
             setUserStatus("not validated")
             return
@@ -151,19 +151,6 @@ export default function Authorization({ user }) {
         }
     }
 
-    function validateInput(inpField) {
-        const capName = `${inpField[0].toUpperCase()}${inpField.slice(1)}`
-        const inpVal = input[inpField]
-        if (inpVal.length < 1) {
-            return `${capName} can't be empty.`
-        } else if (inpVal.length < inputValidators[inpField].minLength || inpVal.length > inputValidators[inpField].maxLength) {
-            return `${capName} must be between ${inputValidators[inpField].minLength} & ${inputValidators[inpField].maxLength} characters.`
-        } else if (!inputValidators[inpField].patternRegEx.test(inpVal)) {
-            setUserStatus("not validated")
-            return `${capName} must be ${inputValidators[inpField].patternText}`
-        }
-    }
-
 
     if (user && userStatus === "active") {
         return <Navigate to="/"></Navigate>
@@ -200,7 +187,7 @@ export default function Authorization({ user }) {
                         {
                             firstFocus.name &&
                             <div className="Authroize__InputErrorMessage">
-                                {validateInput("name")}
+                                {validateInput("name", input, setUserStatus)}
                             </div>
                         }
                     </>
@@ -220,7 +207,7 @@ export default function Authorization({ user }) {
                     {
                         firstFocus.email &&
                         <div className="Authroize__InputErrorMessage">
-                            {validateInput("email")}
+                            {validateInput("email", input, setUserStatus)}
                         </div>
                     }
                 </div>
@@ -239,7 +226,7 @@ export default function Authorization({ user }) {
                     {
                         firstFocus.password &&
                         <div className="Authroize__InputErrorMessage">
-                            {validateInput("password")}
+                            {validateInput("password", input, setUserStatus)}
                         </div>
                     }
                 </div>
