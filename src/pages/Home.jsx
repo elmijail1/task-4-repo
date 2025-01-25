@@ -43,7 +43,7 @@ export default function Home() {
 
     useEffect(() => {
         populateTable()
-        console.log("Table Population effect fired")
+        // console.log("Table Population effect fired")
     }, [])
 
 
@@ -68,7 +68,7 @@ export default function Home() {
     useEffect(() => {
         async function checkIfAccountActiveOnPopulate() {
             const accountActive = await checkIfAccountActive()
-            console.log(`accountActive = ${accountActive}`)
+            // console.log(`accountActive = ${accountActive}`)
             if (!accountActive) {
                 await signOut(auth)
             }
@@ -80,15 +80,18 @@ export default function Home() {
         const accountActive = await checkIfAccountActive()
         if (accountActive) {
             if (selectedRows && selectedRows.length > 0) {
+                const targets = []
                 for (let i = 0; i < selectedRows.length; i++) {
                     try {
                         await deleteDoc(doc(db, "users", selectedRows[i]))
+                        targets.push(tableData.filter(user => user.id === selectedRows[i])[0].name)
                         console.log(`Doc deleted`)
                     } catch (error) {
                         console.error(`Error with deletion: ${error}`)
                     }
                 }
                 setSelectedRows([])
+                setLatestAction({ action: "delete", targets: [...targets] })
                 populateTable()
             } else {
                 console.log("Nothing has been selected")
@@ -100,41 +103,79 @@ export default function Home() {
     }
 
     async function blockSelection() {
-        checkIfAccountActive()
-        if (selectedRows && selectedRows.length > 0) {
-            for (let i = 0; i < selectedRows.length; i++) {
-                try {
-                    await updateDoc(doc(db, "users", selectedRows[i]), { status: "blocked" })
-                    console.log(`Doc blocked`)
-                } catch (error) {
-                    console.error(`Error with deletion: ${error}`)
+        const accountActive = await checkIfAccountActive()
+        if (accountActive) {
+            if (selectedRows && selectedRows.length > 0) {
+                const targets = []
+                for (let i = 0; i < selectedRows.length; i++) {
+                    try {
+                        await updateDoc(doc(db, "users", selectedRows[i]), { status: "blocked" })
+                        targets.push(tableData.filter(user => user.id === selectedRows[i])[0].name)
+                        console.log(`Doc blocked`)
+                    } catch (error) {
+                        console.error(`Error with deletion: ${error}`)
+                    }
                 }
+                setLatestAction({ action: "block", targets: [...targets] })
+                populateTable()
             }
-            populateTable()
-        }
-        else {
-            console.log("Nothing has been selected")
+            else {
+                console.log("Nothing has been selected")
+            }
+        } else if (!accountActive) {
+            await signOut(auth)
+            navigate("/authorize")
         }
     }
 
     async function unblockSelection() {
-        checkIfAccountActive()
-        if (selectedRows && selectedRows.length > 0) {
-            for (let i = 0; i < selectedRows.length; i++) {
-                try {
-                    await updateDoc(doc(db, "users", selectedRows[i]), { status: "active" })
-                    console.log(`Doc unblocked`)
-                } catch (error) {
-                    console.error(`Error with deletion: ${error}`)
+        const accountActive = await checkIfAccountActive()
+        if (accountActive) {
+            if (selectedRows && selectedRows.length > 0) {
+                const targets = []
+                for (let i = 0; i < selectedRows.length; i++) {
+                    try {
+                        await updateDoc(doc(db, "users", selectedRows[i]), { status: "active" })
+                        targets.push(tableData.filter(user => user.id === selectedRows[i])[0].name)
+                        console.log(`Doc unblocked`)
+                    } catch (error) {
+                        console.error(`Error with deletion: ${error}`)
+                    }
                 }
+                setLatestAction({ action: "unblock", targets: [...targets] })
+                populateTable()
             }
-            populateTable()
-        }
-        else {
-            console.log("Nothing has been selected")
+            else {
+                console.log("Nothing has been selected")
+            }
+        } else if (!accountActive) {
+            await signOut(auth)
+            navigate("/authorize")
         }
     }
 
+    const [latestAction, setLatestAction] = useState({ action: "", targets: [] })
+
+    function typeTargetUsers() {
+        const targetUsers = latestAction.targets.map((target, index) => {
+            if (latestAction.targets.length > 1 && index === latestAction.targets.length - 1) {
+                return `and ${target}`
+            } else {
+                return target
+            }
+        })
+        return targetUsers.join(", ")
+    }
+
+    function determineLatestActionMessage() {
+        if (latestAction.action === "block") {
+            return `You've blocked ${typeTargetUsers()}. Now they can't log in.`
+        } else if (latestAction.action === "unblock") {
+            return `You've unblocked ${typeTargetUsers()}. Now they can log in & do varios actions.`
+        } else if (latestAction.action === "delete") {
+            return `You've deleted ${typeTargetUsers()}. Now their account doesn't exist.`
+        }
+    }
 
     if (!tableData) {
         return (
@@ -235,6 +276,18 @@ export default function Home() {
                     </tr>
                 </tfoot>
             </table>
-        </div>
+            {
+                latestAction.targets.length > 0 &&
+                <div className={`alert ${latestAction.action === "delete" ? "alert-danger" : "alert-warning"} Authorize__StatusNotification`}>
+                    {determineLatestActionMessage()}
+                    <button
+                        className="Authroize__StatusNotificationCross"
+                        onClick={() => setLatestAction({ action: "", targets: [] })}
+                    >
+                        +
+                    </button>
+                </div>
+            }
+        </div >
     )
 }
