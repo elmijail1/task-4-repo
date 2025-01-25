@@ -1,14 +1,14 @@
-import { BsFillLockFill, BsFillUnlockFill, BsFillTrashFill, BsDoorOpenFill } from "react-icons/bs"
 import { useState, useEffect } from "react"
-import { nanoid } from "nanoid"
 import { useNavigate, Navigate } from "react-router"
 import { signOut } from "firebase/auth"
 import { auth } from "../firebase"
-import typeDate from "../utilities/Home/typeDate"
 import determineLatestActionMessage from "../utilities/Home/determineLatestActionMessage"
 // db management
 import { db } from "../firebase"
 import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
+import ToolBar from "../components/Home/ToolBar"
+import Table from "../components/Home/Table"
+import LastActionNotification from "../components/Home/LastActionNotification"
 
 export default function Home() {
     const navigate = useNavigate()
@@ -187,94 +187,31 @@ export default function Home() {
         <div
             className="container-md p-1 d-flex flex-column"
         >
-            <div className="Home__Toolbar">
-                <div className="Home__ToolbarButtonGroup">
-                    <button
-                        className="btn btn-outline-primary"
-                        title="Block"
-                        onClick={blockSelection}
-                    >
-                        <BsFillLockFill /> Block
-                    </button>
-                    <button
-                        className="btn btn-outline-primary"
-                        title="Unblock"
-                        onClick={unblockSelection}
-                    >
-                        <BsFillUnlockFill />
-                    </button>
-                    <button className="btn btn-outline-danger"
-                        title="Delete"
-                        onClick={deleteSelection}
-                    >
-                        <BsFillTrashFill />
-                    </button>
-                </div>
-                <button
-                    className="btn btn-outline-secondary"
-                    onClick={handleSignOut}
-                    title="Log out"
-                >
-                    <BsDoorOpenFill /> Log out
-                </button>
+            <ToolBar
+                blockSelection={blockSelection}
+                unblockSelection={unblockSelection}
+                deleteSelection={deleteSelection}
+                handleSignOut={handleSignOut}
+            />
 
-            </div>
-
-            <div className="Home__TableWrapper">
-                <table className="table table-responsive table-hover mx-auto overflow-scroll">
-                    <thead>
-                        <tr>
-                            <th scope="col">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedRows?.length === tableData.length}
-                                    onChange={handleCheckAll}
-                                    className="Home__Checkbox"
-                                />
-                            </th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Last login time</th>
-                            <th scope="col">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            tableData.map((entry) => (
-                                <tr
-                                    key={nanoid()}
-                                    className={selectedRows.includes(entry.id) ? "Home__SelectedRow" : ""}
-                                >
-                                    <td>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedRows.includes(entry.id)}
-                                            onChange={() => handleCheck(entry.id)}
-                                            className="Home__Checkbox"
-                                        />
-                                    </td>
-                                    <td>{entry.name} {entry.id === auth.currentUser.uid ? "(you)" : ""}</td>
-                                    <td>{entry.email}</td>
-                                    <td>{typeDate(entry.lastSeen)}</td >
-                                    <td>{entry.status[0].toUpperCase() + entry.status.slice(1)}</td>
-                                </tr >
-                            ))
-                        }
-                    </tbody >
-                </table >
-            </div>
+            <Table
+                auth={auth}
+                tableData={tableData}
+                selectedRows={selectedRows}
+                handleCheck={handleCheck}
+                handleCheckAll={handleCheckAll}
+            />
 
             {
                 latestAction.targets.length > 0 &&
-                <div className={`alert w-75 mx-auto text-align-center ${latestAction.action === "delete" ? "alert-danger" : "alert-warning"} StatusNotification`}>
-                    {determineLatestActionMessage(latestAction)}
-                    <button
-                        className="StatusNotificationCross"
-                        onClick={() => setLatestAction({ action: "", targets: [] })}
-                    >
-                        +
-                    </button>
-                </div>
+                <>
+                    <LastActionNotification
+                        latestAction={latestAction}
+                        setLatestAction={setLatestAction}
+                        determineLatestActionMessage={determineLatestActionMessage}
+                    />
+                </>
+
             }
         </div >
     )
