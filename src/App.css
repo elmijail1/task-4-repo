@@ -87,19 +87,25 @@ form {
   gap: 1rem;
 }
 
+.Home__TableWrapper {
+  max-height: 20rem;
+  width: 95%;
+  margin: 1rem auto 0 auto;
+  overflow: auto;
+  display: inline-block;
+  border: 1px solid hsl(0, 0%, 90%);
+  border-radius: 0.5rem;
+}
+
 .table {
   background-color: white;
-  max-height: 30rem;
-  border-radius: 0 0 0.5rem 0.5rem;
   width: 98%;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 tbody > tr:nth-of-type(odd) {
   background-color: hsl(0, 0%, 99%);
-}
-
-.table > tfoot {
-  height: 1.5rem;
 }
 
 .Home__SelectedRow {
