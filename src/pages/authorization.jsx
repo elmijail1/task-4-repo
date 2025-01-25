@@ -42,34 +42,34 @@ export default function Authorization({ user }) {
     const [userStatus, setUserStatus] = useState()
 
     // it creates an entry in both Auth Users & Firestore's collection "/users"
-    function handleSignUp() {
+    async function handleSignUp() {
         if (!input.email || !input.password) return
-        createUserWithEmailAndPassword(auth, input.email, input.password)
-            .then(async (userCredential) => {
-                const userid = userCredential.user.uid
-                setTimeout(() => {
-                    navigate("/")
-                }, 3000)
-                try {
-                    // the 3rd argument below uses the ID assigned to an Auth User to a related entry to the Firestore, it's very important
-                    await setDoc(doc(db, "users", userid), {
-                        name: input.name,
-                        email: input.email,
-                        lastSeen: "Just now",
-                        status: "active",
-                    })
-                } catch (e) {
-                    console.error("Error adding document: ", e)
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-        setUserStatus("active")
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, input.email, input.password)
+            const user = userCredential.user
+            try {
+                await setDoc(doc(db, "users", user.uid), {
+                    name: input.name,
+                    email: input.email,
+                    lastSeen: "Just now",
+                    status: "active",
+                })
+                setUserStatus("active")
+            } catch (error) {
+                console.error(`Creating a DB record – Error code: ${error.code}`)
+                console.error(`Creating a DB record – Error message: ${error.message}`)
+            }
+        }
+        catch (error) {
+            console.error(`Signing up – Error code: ${error.code}`)
+            console.error(`Signing up – Error message: ${error.message}`)
+            setUserStatus("duplicate email")
+        }
     }
 
     // It first checks whether the user's been deleted from the DB
     // If it has, it deletes it from the Auth table too
+    // If it's been blocked, it lets you know that you're blocked
     async function handleSignIn() {
         if (!input.email || !input.password) return
         try {
@@ -99,9 +99,10 @@ export default function Authorization({ user }) {
             }
         }
         catch (error) {
-            const errorCode = error.code
-            const errorMessage = error.message
-            console.log(errorCode, errorMessage)
+            console.log(`Error code: ${error.code}`)
+            console.log(`Error message: ${error.message}`)
+            setUserStatus("not found")
+
         }
     }
 
@@ -112,6 +113,10 @@ export default function Authorization({ user }) {
             return "Your account has been blocked. Ask another user to unblock you."
         } else if (userStatus === "deleted") {
             return "Your account has been deleted. Create a new one."
+        } else if (userStatus === "not found") {
+            return "No such account found. Either check your login data & try again or create a new account."
+        } else if (userStatus === "duplicate email") {
+            return "An account linked to this email already exists. Either log in to your account or use another email to create a new one."
         }
     }
 
@@ -128,16 +133,12 @@ export default function Authorization({ user }) {
                 return "Name must contain only Latin script (both cases) and numbers"
             }
         } else if (inputFocus === "password") {
-            // console.log(input.password)
-            // console.log(/(^[A-Za-z0-9]+$)/i.test(input.password))
             if (input.password.length < 1) {
                 return "Password must be at least 1 char long"
             } else if (!/(^[A-Za-z0-9!#$%&? "]+$)/i.test(input.password)) {
                 return "Password must contain only Latin script (both cases) and numbers"
             }
         }
-
-        //(?=.*[a-z])(?=.*[A-Z])(?=.*[\W])
     }
 
     if (user && userStatus === "active") {
@@ -229,7 +230,7 @@ export default function Authorization({ user }) {
                     {determineTexts("button")}
                 </button>
                 {userStatus &&
-                    <div className={`alert ${userStatus === "blocked" ? "alert-warning" : "alert-danger"} Authorize__StatusNotification`}>
+                    <div className={`alert ${userStatus === "deleted" ? "alert-danger" : "alert-warning"} Authorize__StatusNotification`}>
                         {determineStatusMessage()}
                         <button
                             className="Authroize__StatusNotificationCross"
