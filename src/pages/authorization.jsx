@@ -3,7 +3,6 @@ import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, deleteUser } from "firebase/auth"
 import { auth, db } from "../firebase"
 import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore"
-import { useNavigate } from "react-router"
 import { Navigate } from "react-router"
 
 
@@ -37,8 +36,6 @@ export default function Authorization({ user }) {
         }
     }
 
-    const navigate = useNavigate()
-
     const [userStatus, setUserStatus] = useState()
 
     // since the task is to make a 1-character long password a possible option and Firebase won't let me do that
@@ -55,7 +52,10 @@ export default function Authorization({ user }) {
 
     // it creates an entry in both Auth Users & Firestore's collection "/users"
     async function handleSignUp() {
-        if (!input.email || !input.password) return
+        if (!input.email || !input.password || !input.name) {
+            setUserStatus("missing data")
+            return
+        }
         try {
             let rightLengthPassword = generateRightLengthPassword()
             const userCredential = await createUserWithEmailAndPassword(auth, input.email, rightLengthPassword)
@@ -84,7 +84,10 @@ export default function Authorization({ user }) {
     // If it has, it deletes it from the Auth table too
     // If it's been blocked, it lets you know that you're blocked
     async function handleSignIn() {
-        if (!input.email || !input.password) return
+        if (!input.email || !input.password) {
+            setUserStatus("missing data")
+            return
+        }
         try {
             let rightLengthPassword = generateRightLengthPassword()
             const userCredential = await signInWithEmailAndPassword(auth, input.email, rightLengthPassword)
@@ -132,6 +135,8 @@ export default function Authorization({ user }) {
             return "No such account found. Either check your login data & try again or create a new account."
         } else if (userStatus === "duplicate email") {
             return "An account linked to this email already exists. Either log in to your account or use another email to create a new one."
+        } else if (userStatus === "missing data") {
+            return "You haven't provided all the required data. Please fill out all the forms before trying to submit the form again."
         }
     }
 
