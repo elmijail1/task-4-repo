@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useNavigate, Navigate } from "react-router"
+import { Navigate } from "react-router"
 import { signOut } from "firebase/auth"
 import { auth } from "../firebase"
 import determineLatestActionMessage from "../utilities/Home/determineLatestActionMessage"
@@ -11,30 +11,9 @@ import Table from "../components/Home/Table"
 import LastActionNotification from "../components/Home/LastActionNotification"
 
 export default function Home() {
-    const navigate = useNavigate()
 
     const [tableData, setTableData] = useState()
     const [selectedRows, setSelectedRows] = useState([])
-
-    function handleCheck(id) {
-        if (selectedRows.includes(id)) {
-            setSelectedRows(prevRows => prevRows.filter(item => item !== id))
-        } else {
-            setSelectedRows(prevRows => [...prevRows, id])
-        }
-    }
-
-    function handleCheckAll() {
-        if (selectedRows.length === tableData.length) {
-            setSelectedRows([])
-        } else {
-            setSelectedRows(tableData.map(entry => entry.id))
-        }
-    }
-
-    function handleSignOut() {
-        signOut(auth).then(navigate("/authorize"))
-    }
 
     const usersCollectionRef = collection(db, "users")
     async function populateTable() {
@@ -191,15 +170,13 @@ export default function Home() {
                 blockSelection={blockSelection}
                 unblockSelection={unblockSelection}
                 deleteSelection={deleteSelection}
-                handleSignOut={handleSignOut}
             />
 
             <Table
                 auth={auth}
                 tableData={tableData}
                 selectedRows={selectedRows}
-                handleCheck={handleCheck}
-                handleCheckAll={handleCheckAll}
+                setSelectedRows={setSelectedRows}
             />
 
             {
