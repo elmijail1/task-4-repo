@@ -6,6 +6,7 @@ import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { Navigate } from "react-router"
 import validateInput from "../utilities/Authorize/validateInput"
 import registerFocus from "../utilities/Authorize/registerFocus"
+import determineStatusMessage from "../utilities/Authorize/determineStatusMessage"
 
 
 export default function Authorization({ user }) {
@@ -129,20 +130,6 @@ export default function Authorization({ user }) {
         }
     }
 
-    function determineStatusMessage() {
-        if (userStatus === "blocked") {
-            return "Your account has been blocked. Ask another user to unblock you."
-        } else if (userStatus === "deleted") {
-            return "Your account has been deleted. Create a new one."
-        } else if (userStatus === "not found") {
-            return "No such account found. Either check your login data & try again or create a new account."
-        } else if (userStatus === "duplicate email") {
-            return "An account linked to this email already exists. Either log in to your account or use another email to create a new one."
-        } else if (userStatus === "not validated") {
-            return "Some of the data you've provided hasn't been validated. Check your input before trying to submit the form again."
-        }
-    }
-
     const [firstFocus, setFirstFocus] = useState({ name: false, email: false, password: false })
 
     if (user && userStatus === "active") {
@@ -232,7 +219,7 @@ export default function Authorization({ user }) {
                 </button>
                 {userStatus &&
                     <div className={`alert ${userStatus === "deleted" ? "alert-danger" : "alert-warning"} StatusNotification`}>
-                        {determineStatusMessage()}
+                        {determineStatusMessage(userStatus)}
                         <button
                             className="StatusNotificationCross"
                             onClick={() => setUserStatus()}
