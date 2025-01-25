@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react"
-import { useNavigate, Navigate } from "react-router"
+import { Navigate } from "react-router"
 import { signOut } from "firebase/auth"
-import { auth } from "../firebase"
-import determineLatestActionMessage from "../utilities/Home/determineLatestActionMessage"
-// db management
-import { db } from "../firebase"
-import { collection, doc, deleteDoc, updateDoc } from "firebase/firestore"
+import { auth, db } from "../firebase"
+import { collection } from "firebase/firestore"
+// components
 import ToolBar from "../components/Home/ToolBar"
 import Table from "../components/Home/Table"
 import LastActionNotification from "../components/Home/LastActionNotification"
+// utilities
 import populateTable from "../utilities/Home/populateTable"
 import checkIfAccountActive from "../utilities/Home/checkIfAccountActive"
+import determineLatestActionMessage from "../utilities/Home/determineLatestActionMessage"
 
 export default function Home() {
-    const navigate = useNavigate()
-
     const [tableData, setTableData] = useState()
     const [selectedRows, setSelectedRows] = useState([])
     const [latestAction, setLatestAction] = useState({ action: "", targets: [] })
@@ -35,87 +33,6 @@ export default function Home() {
         checkIfAccountActiveOnPopulate()
     }, [tableData])
 
-    async function deleteSelection() {
-        const accountActive = await checkIfAccountActive(usersCollectionRef, auth)
-        if (accountActive) {
-            if (selectedRows && selectedRows.length > 0) {
-                const targets = []
-                for (let i = 0; i < selectedRows.length; i++) {
-                    try {
-                        await deleteDoc(doc(db, "users", selectedRows[i]))
-                        targets.push(tableData.filter(user => user.id === selectedRows[i])[0].name)
-                        console.log(`Doc deleted`)
-                    } catch (error) {
-                        console.error(`Error with deletion: ${error}`)
-                    }
-                }
-                setSelectedRows([])
-                setLatestAction({ action: "delete", targets: [...targets] })
-                populateTable(usersCollectionRef, setTableData)
-            } else {
-                console.log("Nothing has been selected")
-                setLatestAction({ action: "nothing", targets: ["none"] })
-            }
-        } else if (!accountActive) {
-            await signOut(auth)
-            navigate("/authorize")
-        }
-    }
-
-    async function blockSelection() {
-        const accountActive = await checkIfAccountActive(usersCollectionRef, auth)
-        if (accountActive) {
-            if (selectedRows && selectedRows.length > 0) {
-                const targets = []
-                for (let i = 0; i < selectedRows.length; i++) {
-                    try {
-                        await updateDoc(doc(db, "users", selectedRows[i]), { status: "blocked" })
-                        targets.push(tableData.filter(user => user.id === selectedRows[i])[0].name)
-                        console.log(`Doc blocked`)
-                    } catch (error) {
-                        console.error(`Error with deletion: ${error}`)
-                    }
-                }
-                setLatestAction({ action: "block", targets: [...targets] })
-                populateTable(usersCollectionRef, setTableData)
-            }
-            else {
-                console.log("Nothing has been selected")
-                setLatestAction({ action: "nothing", targets: ["none"] })
-            }
-        } else if (!accountActive) {
-            await signOut(auth)
-            navigate("/authorize")
-        }
-    }
-
-    async function unblockSelection() {
-        const accountActive = await checkIfAccountActive(usersCollectionRef, auth)
-        if (accountActive) {
-            if (selectedRows && selectedRows.length > 0) {
-                const targets = []
-                for (let i = 0; i < selectedRows.length; i++) {
-                    try {
-                        await updateDoc(doc(db, "users", selectedRows[i]), { status: "active" })
-                        targets.push(tableData.filter(user => user.id === selectedRows[i])[0].name)
-                        console.log(`Doc unblocked`)
-                    } catch (error) {
-                        console.error(`Error with deletion: ${error}`)
-                    }
-                }
-                setLatestAction({ action: "unblock", targets: [...targets] })
-                populateTable(usersCollectionRef, setTableData)
-            }
-            else {
-                console.log("Nothing has been selected")
-                setLatestAction({ action: "nothing", targets: ["none"] })
-            }
-        } else if (!accountActive) {
-            await signOut(auth)
-            navigate("/authorize")
-        }
-    }
-
     if (!tableData) {
         return (
             <p>Loading...</p>
@@ -133,13 +50,15 @@ export default function Home() {
             className="container-md p-1 d-flex flex-column"
         >
             <ToolBar
-                blockSelection={blockSelection}
-                unblockSelection={unblockSelection}
-                deleteSelection={deleteSelection}
+                usersCollectionRef={usersCollectionRef}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                tableData={tableData}
+                setLatestAction={setLatestAction}
+                setTableData={setTableData}
             />
 
             <Table
-                auth={auth}
                 tableData={tableData}
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
