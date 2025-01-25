@@ -1,7 +1,8 @@
 import { nanoid } from "nanoid"
 import typeDate from "../../utilities/Home/typeDate"
+import { handleCheck, handleCheckAll } from "../../utilities/Home/handleChecks"
 
-export default function Table({ auth, tableData, selectedRows, handleCheck, handleCheckAll, }) {
+export default function Table({ auth, tableData, selectedRows, setSelectedRows }) {
     return (
         <div className="Home__TableWrapper">
             <table className="table table-responsive table-hover mx-auto overflow-scroll">
@@ -11,7 +12,7 @@ export default function Table({ auth, tableData, selectedRows, handleCheck, hand
                             <input
                                 type="checkbox"
                                 checked={selectedRows?.length === tableData.length}
-                                onChange={handleCheckAll}
+                                onChange={() => handleCheckAll(tableData, selectedRows, setSelectedRows)}
                                 className="Home__Checkbox"
                             />
                         </th>
@@ -32,7 +33,7 @@ export default function Table({ auth, tableData, selectedRows, handleCheck, hand
                                     <input
                                         type="checkbox"
                                         checked={selectedRows.includes(entry.id)}
-                                        onChange={() => handleCheck(entry.id)}
+                                        onChange={() => handleCheck(entry.id, selectedRows, setSelectedRows)}
                                         className="Home__Checkbox"
                                     />
                                 </td>
