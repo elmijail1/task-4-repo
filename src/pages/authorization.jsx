@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, deleteUser } from "firebase/auth"
 import { auth, db } from "../firebase"
@@ -53,8 +53,9 @@ export default function Authorization({ user }) {
 
     // it creates an entry in both Auth Users & Firestore's collection "/users"
     async function handleSignUp() {
-        if (!input.email || !input.password || !input.name) {
-            setUserStatus("missing data")
+        if (validateInput("email") || validateInput("password") || validateInput("name")) {
+            setFirstFocus({ name: true, email: true, password: true })
+            setUserStatus("not validated")
             return
         }
         try {
@@ -85,8 +86,9 @@ export default function Authorization({ user }) {
     // If it has, it deletes it from the Auth table too
     // If it's been blocked, it lets you know that you're blocked
     async function handleSignIn() {
-        if (!input.email || !input.password) {
-            setUserStatus("missing data")
+        if (validateInput("email") || validateInput("password")) {
+            setFirstFocus(prevFocus => ({ ...prevFocus, email: true, password: true }))
+            setUserStatus("not validated")
             return
         }
         try {
@@ -134,10 +136,8 @@ export default function Authorization({ user }) {
             return "No such account found. Either check your login data & try again or create a new account."
         } else if (userStatus === "duplicate email") {
             return "An account linked to this email already exists. Either log in to your account or use another email to create a new one."
-        } else if (userStatus === "missing data") {
-            return "You haven't provided all the required data. Please fill out all the forms before trying to submit the form again."
         } else if (userStatus === "not validated") {
-            return "Some of the data you've provided hasn't been validated. Check your input before tryig to submit the form again."
+            return "Some of the data you've provided hasn't been validated. Check your input before trying to submit the form again."
         }
     }
 
@@ -177,6 +177,7 @@ export default function Authorization({ user }) {
         } else if (inpVal.length < inputValidators[inpField].minLength || inpVal.length > inputValidators[inpField].maxLength) {
             return `${capName} must be between ${inputValidators[inpField].minLength} & ${inputValidators[inpField].maxLength} characters.`
         } else if (!inputValidators[inpField].patternRegEx.test(inpVal)) {
+            setUserStatus("not validated")
             return `${capName} must be ${inputValidators[inpField].patternText}`
         }
     }
