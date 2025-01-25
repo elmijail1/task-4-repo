@@ -1,17 +1,35 @@
 import { inputValidators } from "../../data/inputValidators";
 
-export default function validateInput(inpField, input, setUserStatus) {
+export default function validateInput(inpField, input, setErrorMessages) {
   const capName = `${inpField[0].toUpperCase()}${inpField.slice(1)}`;
   const inpVal = input[inpField];
   if (inpVal.length < 1) {
-    return `${capName} can't be empty.`;
+    console.log(`${capName}: ${inpVal}`);
+    setErrorMessages((prevMessages) => ({
+      ...prevMessages,
+      [inpField]: `${capName} can't be empty.`,
+    }));
+    return false;
   } else if (
     inpVal.length < inputValidators[inpField].minLength ||
     inpVal.length > inputValidators[inpField].maxLength
   ) {
-    return `${capName} must be between ${inputValidators[inpField].minLength} & ${inputValidators[inpField].maxLength} characters.`;
+    setErrorMessages((prevMessages) => ({
+      ...prevMessages,
+      [inpField]: `${capName} must be between ${inputValidators[inpField].minLength} & ${inputValidators[inpField].maxLength} characters.`,
+    }));
+    return false;
   } else if (!inputValidators[inpField].patternRegEx.test(inpVal)) {
-    setUserStatus("not validated");
-    return `${capName} must be ${inputValidators[inpField].patternText}`;
+    setErrorMessages((prevMessages) => ({
+      ...prevMessages,
+      [inpField]: `${capName} must be ${inputValidators[inpField].patternText}`,
+    }));
+    return false;
+  } else {
+    setErrorMessages((prevMessages) => ({
+      ...prevMessages,
+      [inpField]: "",
+    }));
+    return true;
   }
 }
