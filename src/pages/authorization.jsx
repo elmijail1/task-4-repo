@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, deleteUser } from "firebase/auth"
 import { auth, db } from "../firebase"
 import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { Navigate } from "react-router"
+import { inputValidators } from "../data/inputValidators"
 
 
 export default function Authorization({ user }) {
@@ -142,26 +143,7 @@ export default function Authorization({ user }) {
     }
 
     const [firstFocus, setFirstFocus] = useState({ name: false, email: false, password: false })
-    const inputValidators = {
-        email: {
-            minLength: 6,
-            maxLength: 20,
-            patternRegEx: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-            patternText: "like name@gmail.com"
-        },
-        password: {
-            minLength: 1,
-            maxLength: 20,
-            patternRegEx: /(^[A-Za-z0-9!#$%&? "]+$)/i,
-            patternText: "Latin letters, numbers, and these symbols: !, #, $, %, &, ?, \""
-        },
-        name: {
-            minLength: 1,
-            maxLength: 20,
-            patternRegEx: /(^[A-Za-z0-9]+$)/i,
-            patternText: "Latin letters and numbers"
-        }
-    }
+
     function registerFocus(event) {
         if (!firstFocus[event.target.name]) {
             setFirstFocus(prevFocus => ({ ...prevFocus, [event.target.name]: true }))
