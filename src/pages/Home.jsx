@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Navigate } from "react-router"
+import { useNavigate, Navigate } from "react-router"
 import { signOut } from "firebase/auth"
 import { auth } from "../firebase"
 import determineLatestActionMessage from "../utilities/Home/determineLatestActionMessage"
@@ -9,33 +9,19 @@ import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firesto
 import ToolBar from "../components/Home/ToolBar"
 import Table from "../components/Home/Table"
 import LastActionNotification from "../components/Home/LastActionNotification"
+import populateTable from "../utilities/Home/populateTable"
 
 export default function Home() {
+    const navigate = useNavigate()
 
     const [tableData, setTableData] = useState()
     const [selectedRows, setSelectedRows] = useState([])
+    const [latestAction, setLatestAction] = useState({ action: "", targets: [] })
 
     const usersCollectionRef = collection(db, "users")
-    async function populateTable() {
-        const snapshot = await getDocs(usersCollectionRef)
-        const users = snapshot.docs
-            .map(doc => ({ ...doc.data(), id: doc.id }))
-            .sort((a, b) => {
-                let valueA = a.name
-                let valueB = b.name
-                if (valueA < valueB) {
-                    return -1
-                } else if (valueA > valueB || valueA === valueB) {
-                    return 1
-                } else {
-                    return 0
-                }
-            })
-        setTableData(users)
-    }
 
     useEffect(() => {
-        populateTable()
+        populateTable(usersCollectionRef, setTableData)
     }, [])
 
 
@@ -83,7 +69,7 @@ export default function Home() {
                 }
                 setSelectedRows([])
                 setLatestAction({ action: "delete", targets: [...targets] })
-                populateTable()
+                populateTable(usersCollectionRef, setTableData)
             } else {
                 console.log("Nothing has been selected")
                 setLatestAction({ action: "nothing", targets: ["none"] })
@@ -109,7 +95,7 @@ export default function Home() {
                     }
                 }
                 setLatestAction({ action: "block", targets: [...targets] })
-                populateTable()
+                populateTable(usersCollectionRef, setTableData)
             }
             else {
                 console.log("Nothing has been selected")
@@ -136,7 +122,7 @@ export default function Home() {
                     }
                 }
                 setLatestAction({ action: "unblock", targets: [...targets] })
-                populateTable()
+                populateTable(usersCollectionRef, setTableData)
             }
             else {
                 console.log("Nothing has been selected")
@@ -147,8 +133,6 @@ export default function Home() {
             navigate("/authorize")
         }
     }
-
-    const [latestAction, setLatestAction] = useState({ action: "", targets: [] })
 
     if (!tableData) {
         return (
