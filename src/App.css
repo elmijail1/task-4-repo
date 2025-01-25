@@ -42,6 +42,22 @@ form {
   text-decoration: underline;
 }
 
+.Authorize__StatusNotification {
+  margin-top: 1rem;
+  position: relative;
+}
+
+.Authroize__StatusNotificationCross {
+  position: absolute;
+  font-size: 1.6rem;
+  color: inherit;
+  top: -0.5rem;
+  right: 0.3rem;
+  rotate: 45deg;
+  background: none;
+  border: none;
+}
+
 /* page: Home */
 .container-md {
   margin-top: 8rem;
