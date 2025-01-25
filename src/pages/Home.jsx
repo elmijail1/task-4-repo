@@ -10,6 +10,7 @@ import ToolBar from "../components/Home/ToolBar"
 import Table from "../components/Home/Table"
 import LastActionNotification from "../components/Home/LastActionNotification"
 import populateTable from "../utilities/Home/populateTable"
+import checkIfAccountActive from "../utilities/Home/checkIfAccountActive"
 
 export default function Home() {
     const navigate = useNavigate()
@@ -24,28 +25,9 @@ export default function Home() {
         populateTable(usersCollectionRef, setTableData)
     }, [])
 
-
-    async function checkIfAccountActive() {
-        try {
-            const snapshot = await getDocs(usersCollectionRef)
-            const users = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
-            if (!auth.currentUser) {
-                return false
-            } else if (!users.filter(user => user.id === auth.currentUser.uid)[0]) {
-                return false
-            } else if (users.filter(user => user.id === auth.currentUser.uid)[0].status === "blocked") {
-                return false
-            } else {
-                return true
-            }
-        } catch (error) {
-            console.error(`Error with getting a snapshot in checkAccountStatus: ${error} `)
-        }
-    }
-
     useEffect(() => {
         async function checkIfAccountActiveOnPopulate() {
-            const accountActive = await checkIfAccountActive()
+            const accountActive = await checkIfAccountActive(usersCollectionRef, auth)
             if (!accountActive) {
                 await signOut(auth)
             }
@@ -54,7 +36,7 @@ export default function Home() {
     }, [tableData])
 
     async function deleteSelection() {
-        const accountActive = await checkIfAccountActive()
+        const accountActive = await checkIfAccountActive(usersCollectionRef, auth)
         if (accountActive) {
             if (selectedRows && selectedRows.length > 0) {
                 const targets = []
@@ -81,7 +63,7 @@ export default function Home() {
     }
 
     async function blockSelection() {
-        const accountActive = await checkIfAccountActive()
+        const accountActive = await checkIfAccountActive(usersCollectionRef, auth)
         if (accountActive) {
             if (selectedRows && selectedRows.length > 0) {
                 const targets = []
@@ -108,7 +90,7 @@ export default function Home() {
     }
 
     async function unblockSelection() {
-        const accountActive = await checkIfAccountActive()
+        const accountActive = await checkIfAccountActive(usersCollectionRef, auth)
         if (accountActive) {
             if (selectedRows && selectedRows.length > 0) {
                 const targets = []
