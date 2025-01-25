@@ -95,6 +95,7 @@ export default function Home() {
                 populateTable()
             } else {
                 console.log("Nothing has been selected")
+                setLatestAction({ action: "nothing", targets: ["none"] })
             }
         } else if (!accountActive) {
             await signOut(auth)
@@ -121,6 +122,7 @@ export default function Home() {
             }
             else {
                 console.log("Nothing has been selected")
+                setLatestAction({ action: "nothing", targets: ["none"] })
             }
         } else if (!accountActive) {
             await signOut(auth)
@@ -147,6 +149,7 @@ export default function Home() {
             }
             else {
                 console.log("Nothing has been selected")
+                setLatestAction({ action: "nothing", targets: ["none"] })
             }
         } else if (!accountActive) {
             await signOut(auth)
@@ -173,8 +176,15 @@ export default function Home() {
         } else if (latestAction.action === "unblock") {
             return `You've unblocked ${typeTargetUsers()}. Now they can log in & do various actions.`
         } else if (latestAction.action === "delete") {
-            return `You've deleted ${typeTargetUsers()}. Now their account doesn't exist.`
+            return `You've deleted ${typeTargetUsers()}. Now they don't`
+        } else if (latestAction.action === "nothing") {
+            return `Nothing has been selected. Use checkboxes to select users.`
         }
+    }
+
+    function typeDate(timestamp) {
+        const date = timestamp.toDate()
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}`
     }
 
     if (!tableData) {
@@ -260,12 +270,12 @@ export default function Home() {
                                 </td>
                                 <td>{entry.name} {entry.id === auth.currentUser.uid ? "(you)" : ""}</td>
                                 <td>{entry.email}</td>
-                                <td>{entry.lastSeen}</td>
+                                <td>{typeDate(entry.lastSeen)}</td >
                                 <td>{entry.status[0].toUpperCase() + entry.status.slice(1)}</td>
-                            </tr>
+                            </tr >
                         ))
                     }
-                </tbody>
+                </tbody >
                 <tfoot>
                     <tr>
                         <td></td>
@@ -275,7 +285,7 @@ export default function Home() {
                         <td></td>
                     </tr>
                 </tfoot>
-            </table>
+            </table >
             {
                 latestAction.targets.length > 0 &&
                 <div className={`alert w-75 mx-auto text-align-center ${latestAction.action === "delete" ? "alert-danger" : "alert-warning"} StatusNotification`}>
