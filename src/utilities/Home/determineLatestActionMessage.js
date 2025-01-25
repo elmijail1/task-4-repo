@@ -12,7 +12,7 @@ export default function determineLatestActionMessage(latestAction) {
   } else if (latestAction.action === "delete") {
     return `You've deleted ${typeTargetUsers(
       latestAction.targets
-    )}. Now they don't`;
+    )}. Now they don't have an account.`;
   } else if (latestAction.action === "nothing") {
     return `Nothing has been selected. Use checkboxes to select users.`;
   }
