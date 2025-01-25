@@ -5,7 +5,7 @@ import { auth } from "../firebase"
 import determineLatestActionMessage from "../utilities/Home/determineLatestActionMessage"
 // db management
 import { db } from "../firebase"
-import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
+import { collection, doc, deleteDoc, updateDoc } from "firebase/firestore"
 import ToolBar from "../components/Home/ToolBar"
 import Table from "../components/Home/Table"
 import LastActionNotification from "../components/Home/LastActionNotification"
