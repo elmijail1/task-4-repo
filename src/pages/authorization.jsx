@@ -7,6 +7,7 @@ import { Navigate } from "react-router"
 import validateInput from "../utilities/Authorize/validateInput"
 import registerFocus from "../utilities/Authorize/registerFocus"
 import determineStatusMessage from "../utilities/Authorize/determineStatusMessage"
+import generateRightLengthPassword from "../utilities/Authorize/generateRightLengthPassword"
 
 
 export default function Authorization({ user }) {
@@ -42,27 +43,20 @@ export default function Authorization({ user }) {
 
     const [userStatus, setUserStatus] = useState()
 
-    // since the task is to make a 1-character long password a possible option and Firebase won't let me do that
-    function generateRightLengthPassword() {
-        let rightLengthPassword = input.password
-        if (input.password.length < 6) {
-            for (let i = 0; i < 6 - input.password.length; i++) {
-                rightLengthPassword = rightLengthPassword + "0"
-            }
-            console.log(rightLengthPassword)
-        }
-        return rightLengthPassword
-    }
-
     // it creates an entry in both Auth Users & Firestore's collection "/users"
     async function handleSignUp() {
-        if (validateInput("email", input, setUserStatus) || validateInput("password", input, setUserStatus) || validateInput("name", input, setUserStatus)) {
+        const fields = ["email", "password", "name"]
+        for (let field of fields) {
+            validateInput(field, input, setErrorMessages)
+            console.log(errorMessages)
+        }
+        if (!validateInput("email", input, setErrorMessages) || !validateInput("password", input, setErrorMessages) || !validateInput("name", input, setErrorMessages)) {
             setFirstFocus({ name: true, email: true, password: true })
             setUserStatus("not validated")
             return
         }
         try {
-            let rightLengthPassword = generateRightLengthPassword()
+            let rightLengthPassword = generateRightLengthPassword(input)
             const userCredential = await createUserWithEmailAndPassword(auth, input.email, rightLengthPassword)
             const user = userCredential.user
             try {
@@ -89,13 +83,18 @@ export default function Authorization({ user }) {
     // If it has, it deletes it from the Auth table too
     // If it's been blocked, it lets you know that you're blocked
     async function handleSignIn() {
-        if (validateInput("email", input, setUserStatus) || validateInput("password", input, setUserStatus)) {
-            setFirstFocus(prevFocus => ({ ...prevFocus, email: true, password: true }))
+        const fields = ["email", "password"]
+        for (let field of fields) {
+            validateInput(field, input, setErrorMessages)
+            console.log(errorMessages)
+        }
+        if (!validateInput("email", input, setErrorMessages) || !validateInput("password", input, setErrorMessages)) {
+            setFirstFocus({ name: false, email: true, password: true })
             setUserStatus("not validated")
             return
         }
         try {
-            let rightLengthPassword = generateRightLengthPassword()
+            let rightLengthPassword = generateRightLengthPassword(input)
             const userCredential = await signInWithEmailAndPassword(auth, input.email, rightLengthPassword)
             const user = userCredential.user
             const usersCollectionRef = collection(db, "users")
@@ -126,11 +125,11 @@ export default function Authorization({ user }) {
             console.log(`Error code: ${error.code}`)
             console.log(`Error message: ${error.message}`)
             setUserStatus("not found")
-
         }
     }
 
     const [firstFocus, setFirstFocus] = useState({ name: false, email: false, password: false })
+    const [errorMessages, setErrorMessages] = useState({ name: "", email: "", password: "" })
 
     if (user && userStatus === "active") {
         return <Navigate to="/"></Navigate>
@@ -165,9 +164,9 @@ export default function Authorization({ user }) {
                             />
                         </div>
                         {
-                            firstFocus.name &&
+                            errorMessages.name &&
                             <div className="Authroize__InputErrorMessage">
-                                {validateInput("name", input, setUserStatus)}
+                                {errorMessages.name}
                             </div>
                         }
                     </>
@@ -185,9 +184,9 @@ export default function Authorization({ user }) {
                         onFocus={() => registerFocus(event, firstFocus, setFirstFocus)}
                     />
                     {
-                        firstFocus.email &&
+                        errorMessages.email &&
                         <div className="Authroize__InputErrorMessage">
-                            {validateInput("email", input, setUserStatus)}
+                            {errorMessages.email}
                         </div>
                     }
                 </div>
@@ -204,9 +203,9 @@ export default function Authorization({ user }) {
                         onFocus={() => registerFocus(event, firstFocus, setFirstFocus)}
                     />
                     {
-                        firstFocus.password &&
+                        errorMessages.password &&
                         <div className="Authroize__InputErrorMessage">
-                            {validateInput("password", input, setUserStatus)}
+                            {errorMessages.password}
                         </div>
                     }
                 </div>
