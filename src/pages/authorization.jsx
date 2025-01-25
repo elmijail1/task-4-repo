@@ -124,16 +124,20 @@ export default function Authorization({ user }) {
         } else if (inputFocus === "name") {
             if (input.name.length < 1) {
                 return "Name must be at least 1 char long"
-            } else if (/(?=.*[A-Za-z0-9])(?=.*[-+_!@#$%^&*.,?])/i.test(input.name)) {
-                return "Name must contain only Latin script (both cases), numbers, and special symbols"
+            } else if (!/(^[A-Za-z0-9]+$)/i.test(input.name)) {
+                return "Name must contain only Latin script (both cases) and numbers"
             }
         } else if (inputFocus === "password") {
+            // console.log(input.password)
+            // console.log(/(^[A-Za-z0-9]+$)/i.test(input.password))
             if (input.password.length < 1) {
                 return "Password must be at least 1 char long"
-            } else if (/(?=.*[A-Za-z0-9])(?=.*[-+_!@#$%^&*.,?])/i.test(input.password)) {
-                return "Password must contain only Latin script (both cases), numbers, and special symbols"
+            } else if (!/(^[A-Za-z0-9!#$%&? "]+$)/i.test(input.password)) {
+                return "Password must contain only Latin script (both cases) and numbers"
             }
         }
+
+        //(?=.*[a-z])(?=.*[A-Z])(?=.*[\W])
     }
 
     if (user && userStatus === "active") {
@@ -166,6 +170,7 @@ export default function Authorization({ user }) {
                                 value={input.name}
                                 onChange={handleInput}
                                 onFocus={() => setInputFocus("name")}
+                                onBlur={() => setInputFocus()}
                             />
                         </div>
                         {
@@ -176,7 +181,7 @@ export default function Authorization({ user }) {
                         }
                     </>
                 }
-                <div className={`mb - 3 ${authType === "login" ? "mt-5" : ""} `}>
+                <div className={`mb-3 ${authType === "login" ? "mt-5" : ""} `}>
                     <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
                     <input
                         type="email"
@@ -187,6 +192,7 @@ export default function Authorization({ user }) {
                         value={input.email}
                         onChange={handleInput}
                         onFocus={() => setInputFocus("email")}
+                        onBlur={() => setInputFocus()}
                     />
                     {
                         inputFocus === "email" &&
@@ -206,6 +212,7 @@ export default function Authorization({ user }) {
                         value={input.password}
                         onChange={handleInput}
                         onFocus={() => setInputFocus("password")}
+                        onBlur={() => setInputFocus()}
                     />
                     {
                         inputFocus === "password" &&
