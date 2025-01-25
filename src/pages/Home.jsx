@@ -4,6 +4,8 @@ import { nanoid } from "nanoid"
 import { useNavigate, Navigate } from "react-router"
 import { signOut } from "firebase/auth"
 import { auth } from "../firebase"
+import typeDate from "../utilities/Home/typeDate"
+import determineLatestActionMessage from "../utilities/Home/determineLatestActionMessage"
 // db management
 import { db } from "../firebase"
 import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore"
@@ -43,7 +45,6 @@ export default function Home() {
 
     useEffect(() => {
         populateTable()
-        // console.log("Table Population effect fired")
     }, [])
 
 
@@ -68,7 +69,6 @@ export default function Home() {
     useEffect(() => {
         async function checkIfAccountActiveOnPopulate() {
             const accountActive = await checkIfAccountActive()
-            // console.log(`accountActive = ${accountActive}`)
             if (!accountActive) {
                 await signOut(auth)
             }
@@ -158,34 +158,6 @@ export default function Home() {
     }
 
     const [latestAction, setLatestAction] = useState({ action: "", targets: [] })
-
-    function typeTargetUsers() {
-        const targetUsers = latestAction.targets.map((target, index) => {
-            if (latestAction.targets.length > 1 && index === latestAction.targets.length - 1) {
-                return `and ${target}`
-            } else {
-                return target
-            }
-        })
-        return targetUsers.join(", ")
-    }
-
-    function determineLatestActionMessage() {
-        if (latestAction.action === "block") {
-            return `You've blocked ${typeTargetUsers()}. Now they can't log in.`
-        } else if (latestAction.action === "unblock") {
-            return `You've unblocked ${typeTargetUsers()}. Now they can log in & do various actions.`
-        } else if (latestAction.action === "delete") {
-            return `You've deleted ${typeTargetUsers()}. Now they don't`
-        } else if (latestAction.action === "nothing") {
-            return `Nothing has been selected. Use checkboxes to select users.`
-        }
-    }
-
-    function typeDate(timestamp) {
-        const date = timestamp.toDate()
-        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}`
-    }
 
     if (!tableData) {
         return (
@@ -289,7 +261,7 @@ export default function Home() {
             {
                 latestAction.targets.length > 0 &&
                 <div className={`alert w-75 mx-auto text-align-center ${latestAction.action === "delete" ? "alert-danger" : "alert-warning"} StatusNotification`}>
-                    {determineLatestActionMessage()}
+                    {determineLatestActionMessage(latestAction)}
                     <button
                         className="StatusNotificationCross"
                         onClick={() => setLatestAction({ action: "", targets: [] })}
