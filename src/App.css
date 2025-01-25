@@ -42,6 +42,13 @@ form {
   text-decoration: underline;
 }
 
+.Authroize__InputErrorMessage {
+  margin-top: 0.2rem;
+  margin-bottom: 1rem;
+  color: hsl(0, 100%, 50%);
+  font-weight: 500;
+}
+
 .Authorize__StatusNotification {
   margin-top: 1rem;
   position: relative;
