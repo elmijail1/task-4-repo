@@ -2,7 +2,7 @@ import { useState } from "react"
 import { conditionalTexts } from "../data/authorizeUItexts"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, deleteUser } from "firebase/auth"
 import { auth, db } from "../firebase"
-import { doc, setDoc, collection, getDocs } from "firebase/firestore"
+import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { useNavigate } from "react-router"
 import { Navigate } from "react-router"
 
@@ -51,7 +51,7 @@ export default function Authorization({ user }) {
                 await setDoc(doc(db, "users", user.uid), {
                     name: input.name,
                     email: input.email,
-                    lastSeen: "Just now",
+                    lastSeen: new Date(),
                     status: "active",
                 })
                 setUserStatus("active")
@@ -92,6 +92,7 @@ export default function Authorization({ user }) {
                     setUserStatus("blocked")
                     console.log("Your account has been blocked, lol")
                 } else {
+                    await updateDoc(doc(db, "users", user.uid), { lastSeen: new Date() })
                     setUserStatus("active")
                 }
             } catch (error) {
