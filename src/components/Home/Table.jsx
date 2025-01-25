@@ -1,8 +1,9 @@
 import { nanoid } from "nanoid"
 import typeDate from "../../utilities/Home/typeDate"
+import { auth } from "../../firebase"
 import { handleCheck, handleCheckAll } from "../../utilities/Home/handleChecks"
 
-export default function Table({ auth, tableData, selectedRows, setSelectedRows }) {
+export default function Table({ tableData, selectedRows, setSelectedRows }) {
     return (
         <div className="Home__TableWrapper">
             <table className="table table-responsive table-hover mx-auto overflow-scroll">
