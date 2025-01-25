@@ -41,11 +41,24 @@ export default function Authorization({ user }) {
 
     const [userStatus, setUserStatus] = useState()
 
+    // since the task is to make a 1-character long password a possible option and Firebase won't let me do that
+    function generateRightLengthPassword() {
+        let rightLengthPassword = input.password
+        if (input.password.length < 6) {
+            for (let i = 0; i < 6 - input.password.length; i++) {
+                rightLengthPassword = rightLengthPassword + "0"
+            }
+            console.log(rightLengthPassword)
+        }
+        return rightLengthPassword
+    }
+
     // it creates an entry in both Auth Users & Firestore's collection "/users"
     async function handleSignUp() {
         if (!input.email || !input.password) return
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, input.email, input.password)
+            let rightLengthPassword = generateRightLengthPassword()
+            const userCredential = await createUserWithEmailAndPassword(auth, input.email, rightLengthPassword)
             const user = userCredential.user
             try {
                 await setDoc(doc(db, "users", user.uid), {
@@ -73,7 +86,8 @@ export default function Authorization({ user }) {
     async function handleSignIn() {
         if (!input.email || !input.password) return
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, input.email, input.password)
+            let rightLengthPassword = generateRightLengthPassword()
+            const userCredential = await signInWithEmailAndPassword(auth, input.email, rightLengthPassword)
             const user = userCredential.user
             const usersCollectionRef = collection(db, "users")
             try {
