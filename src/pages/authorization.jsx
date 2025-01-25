@@ -105,6 +105,17 @@ export default function Authorization({ user }) {
         }
     }
 
+    const [statusMessage, setStatusMessage] = useState()
+    const [inputErrorMessage, setInputErrorMessage] = useState()
+
+    function determineStatusMessage() {
+        if (userStatus === "blocked") {
+            return "Your account has been blocked. Ask another user to unblock you."
+        } else if (userStatus === "deleted") {
+            return "Your account has been deleted. Create a new one."
+        }
+    }
+
 
     if (user && userStatus === "active") {
         return <Navigate to="/"></Navigate>
@@ -169,6 +180,17 @@ export default function Authorization({ user }) {
                 >
                     {determineTexts("button")}
                 </button>
+                {userStatus &&
+                    <div className={`alert ${userStatus === "blocked" ? "alert-warning" : "alert-danger"} Authorize__StatusNotification`}>
+                        {determineStatusMessage()}
+                        <button
+                            className="Authroize__StatusNotificationCross"
+                            onClick={() => setUserStatus()}
+                        >
+                            +
+                        </button>
+                    </div>
+                }
             </form>
         </div >
     )
