@@ -1,8 +1,12 @@
 import { BsFillLockFill, BsFillUnlockFill, BsFillTrashFill, BsDoorOpenFill } from "react-icons/bs"
 import ToolBarButton from "./ToolBarButton"
+import handleSignOut from "../../utilities/Home/handleSignout";
+import { useNavigate } from "react-router";
 
 
-export default function ToolBar({ blockSelection, unblockSelection, deleteSelection, handleSignOut }) {
+export default function ToolBar({ blockSelection, unblockSelection, deleteSelection }) {
+    const navigate = useNavigate();
+
     return (
         <div className="Home__Toolbar">
             <div className="Home__ToolbarButtonGroup">
@@ -31,7 +35,7 @@ export default function ToolBar({ blockSelection, unblockSelection, deleteSelect
             <ToolBarButton
                 classNameValue="btn btn-outline-secondary"
                 titleValue="Log out"
-                onClickAction={handleSignOut}
+                onClickAction={() => handleSignOut(navigate)}
             >
                 <BsDoorOpenFill /> Log out
             </ToolBarButton>
