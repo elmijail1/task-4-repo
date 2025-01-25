@@ -1,4 +1,4 @@
-import { inputValidators } from "../../../data/inputValidators";
+import { inputValidators } from "../../data/inputValidators";
 
 export default function validateInput(inpField, input, setUserStatus) {
   const capName = `${inpField[0].toUpperCase()}${inpField.slice(1)}`;
