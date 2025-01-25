@@ -171,7 +171,7 @@ export default function Home() {
         if (latestAction.action === "block") {
             return `You've blocked ${typeTargetUsers()}. Now they can't log in.`
         } else if (latestAction.action === "unblock") {
-            return `You've unblocked ${typeTargetUsers()}. Now they can log in & do varios actions.`
+            return `You've unblocked ${typeTargetUsers()}. Now they can log in & do various actions.`
         } else if (latestAction.action === "delete") {
             return `You've deleted ${typeTargetUsers()}. Now their account doesn't exist.`
         }
@@ -278,10 +278,10 @@ export default function Home() {
             </table>
             {
                 latestAction.targets.length > 0 &&
-                <div className={`alert ${latestAction.action === "delete" ? "alert-danger" : "alert-warning"} Authorize__StatusNotification`}>
+                <div className={`alert w-75 mx-auto text-align-center ${latestAction.action === "delete" ? "alert-danger" : "alert-warning"} StatusNotification`}>
                     {determineLatestActionMessage()}
                     <button
-                        className="Authroize__StatusNotificationCross"
+                        className="StatusNotificationCross"
                         onClick={() => setLatestAction({ action: "", targets: [] })}
                     >
                         +
