@@ -4,7 +4,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, de
 import { auth, db } from "../firebase"
 import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { Navigate } from "react-router"
-import validateInput from "../utilities/Home/Authorize/validateInput"
+import validateInput from "../utilities/Authorize/validateInput"
+import registerFocus from "../utilities/Authorize/registerFocus"
 
 
 export default function Authorization({ user }) {
@@ -144,14 +145,6 @@ export default function Authorization({ user }) {
 
     const [firstFocus, setFirstFocus] = useState({ name: false, email: false, password: false })
 
-    function registerFocus(event) {
-        if (!firstFocus[event.target.name]) {
-            setFirstFocus(prevFocus => ({ ...prevFocus, [event.target.name]: true }))
-            console.log(`${event.target.name} got its first focus!`)
-        }
-    }
-
-
     if (user && userStatus === "active") {
         return <Navigate to="/"></Navigate>
     }
@@ -181,7 +174,7 @@ export default function Authorization({ user }) {
                                 name="name"
                                 value={input.name}
                                 onChange={handleInput}
-                                onFocus={registerFocus}
+                                onFocus={() => registerFocus(event, firstFocus, setFirstFocus)}
                             />
                         </div>
                         {
@@ -202,7 +195,7 @@ export default function Authorization({ user }) {
                         name="email"
                         value={input.email}
                         onChange={handleInput}
-                        onFocus={registerFocus}
+                        onFocus={() => registerFocus(event, firstFocus, setFirstFocus)}
                     />
                     {
                         firstFocus.email &&
@@ -221,7 +214,7 @@ export default function Authorization({ user }) {
                         name="password"
                         value={input.password}
                         onChange={handleInput}
-                        onFocus={registerFocus}
+                        onFocus={() => registerFocus(event, firstFocus, setFirstFocus)}
                     />
                     {
                         firstFocus.password &&
