@@ -5,7 +5,7 @@ import registerFocus from "../utilities/Authorize/registerFocus"
 import determineStatusMessage from "../utilities/Authorize/determineStatusMessage"
 import handleSignUp from "../utilities/Authorize/handleSignUp"
 import handleSignIn from "../utilities/Authorize/handleSignIn"
-import InputField from "../components/Authorization/InputField"
+import InputSection from "../components/Authorization/InputSection"
 
 
 export default function Authorization({ user }) {
@@ -58,41 +58,15 @@ export default function Authorization({ user }) {
                     {determineTexts("sub")}
                 </button>
 
-                {
-                    authType === "signup" &&
-                    <>
-                        <InputField
-                            fieldName="name"
-                            placeholder="Joe"
-                            classes="mb-3 mt-5"
-                            input={input}
-                            handleInput={handleInput}
-                            firstFocus={firstFocus}
-                            setFirstFocus={setFirstFocus}
-                            errorMessages={errorMessages}
-                        />
-                    </>
-                }
-                <InputField
-                    fieldName="email"
-                    placeholder="name@example.com"
-                    classes={`mb-3 ${authType === "login" ? "mt-5" : ""} `}
+                <InputSection
+                    authType={authType}
                     input={input}
                     handleInput={handleInput}
                     firstFocus={firstFocus}
                     setFirstFocus={setFirstFocus}
                     errorMessages={errorMessages}
                 />
-                <InputField
-                    fieldName="password"
-                    placeholder="****"
-                    classes="mb-3"
-                    input={input}
-                    handleInput={handleInput}
-                    firstFocus={firstFocus}
-                    setFirstFocus={setFirstFocus}
-                    errorMessages={errorMessages}
-                />
+
                 <button
                     type="button"
                     className="btn btn-primary w-100"
