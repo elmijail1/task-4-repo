@@ -19,11 +19,20 @@ export async function deleteSelection(
       const targets = [];
       for (let i = 0; i < selectedRows.length; i++) {
         try {
+          await deleteDoc(
+            doc(
+              db,
+              "emails",
+              tableData.filter((user) => user.id === selectedRows[i])[0].email
+            )
+          );
+          console.log(`Doc deleted from emails`);
+
           await deleteDoc(doc(db, "users", selectedRows[i]));
           targets.push(
             tableData.filter((user) => user.id === selectedRows[i])[0].name
           );
-          console.log(`Doc deleted`);
+          console.log(`Doc deleted from users`);
         } catch (error) {
           console.error(`Error with deletion: ${error}`);
         }
