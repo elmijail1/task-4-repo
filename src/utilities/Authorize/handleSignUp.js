@@ -32,6 +32,7 @@ export default async function handleSignUp(
     );
     const user = userCredential.user;
     try {
+      // Firebase Auth uid is used for consisten storing
       await setDoc(doc(db, "users", user.uid), {
         name: input.name,
         email: input.email,

@@ -38,6 +38,7 @@ export default async function handleSignIn(
         ...doc.data(),
         id: doc.id,
       }));
+      // Firebase Auth uid is used for consisten storing
       if (!activeUsersIDs.map((entry) => entry.id).includes(user.uid)) {
         try {
           await deleteUser(getAuth().currentUser);
