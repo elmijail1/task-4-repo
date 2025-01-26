@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { Navigate } from "react-router"
-import determineStatusMessage from "../utilities/Authorize/determineStatusMessage"
-import InputSection from "../components/Authorization/InputSection"
-import AuthTypeSwitch from "../components/Authorization/AuthTypeSwitch"
+// functions
 import determineTexts from "../utilities/Authorize/determineTexts"
+//components
+import AuthTypeSwitch from "../components/Authorization/AuthTypeSwitch"
+import InputSection from "../components/Authorization/InputSection"
 import FormButton from "../components/Authorization/FormButton"
+import StatusMessage from "../components/Authorization/StatusMessage"
 
 
 export default function Authorization({ user }) {
@@ -56,15 +58,10 @@ export default function Authorization({ user }) {
                 />
 
                 {userStatus &&
-                    <div className={`alert ${userStatus === "deleted" ? "alert-danger" : "alert-warning"} StatusNotification`}>
-                        {determineStatusMessage(userStatus)}
-                        <button
-                            className="StatusNotificationCross"
-                            onClick={() => setUserStatus()}
-                        >
-                            +
-                        </button>
-                    </div>
+                    <StatusMessage
+                        userStatus={userStatus}
+                        setUserStatus={setUserStatus}
+                    />
                 }
             </form>
         </div >
