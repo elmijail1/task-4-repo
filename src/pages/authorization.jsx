@@ -21,7 +21,6 @@ export default function Authorization({ user }) {
 
     function handleInput(event) {
         const { name, value } = event.target
-        console.log(name)
         setInput((prevInput) => ({ ...prevInput, [name]: value }))
     }
 
