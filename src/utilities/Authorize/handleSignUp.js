@@ -1,7 +1,7 @@
 import validateInput from "./validateInput";
 import generateRightLengthPassword from "./generateRightLengthPassword";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 
 export default async function handleSignUp(
@@ -25,6 +25,18 @@ export default async function handleSignUp(
   }
   try {
     let rightLengthPassword = generateRightLengthPassword(input);
+
+    try {
+      await updateDoc(doc(db, "emails", input.email), {
+        name: input.name,
+      });
+      console.log(`An email duplication attempt!`);
+      setUserStatus("duplicate email");
+      return;
+    } catch {
+      console.log(`Good, so the email isn't duplicate`);
+    }
+
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       input.email,
@@ -32,18 +44,33 @@ export default async function handleSignUp(
     );
     const user = userCredential.user;
     try {
-      // Firebase Auth uid is used for consisten storing
       await setDoc(doc(db, "users", user.uid), {
         name: input.name,
         email: input.email,
         lastSeen: new Date(),
         status: "active",
       });
-      setUserStatus("active");
     } catch (error) {
-      console.error(`Creating a DB record – Error code: ${error.code}`);
-      console.error(`Creating a DB record – Error message: ${error.message}`);
+      console.error(`Creating the users DB record – Error code: ${error.code}`);
+      console.error(
+        `Creating the users DB record – Error message: ${error.message}`
+      );
     }
+
+    try {
+      await setDoc(doc(db, "emails", input.email), {
+        id: user.uid,
+      });
+    } catch (error) {
+      console.error(
+        `Adding an ID to the emails DB record – Error code: ${error.code}`
+      );
+      console.error(
+        `Adding an ID to the emails DB record – Error message: ${error.message}`
+      );
+    }
+
+    setUserStatus("active");
   } catch (error) {
     console.error(`Signing up – Error code: ${error.code}`);
     console.error(`Signing up – Error message: ${error.message}`);
