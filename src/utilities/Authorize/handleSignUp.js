@@ -27,14 +27,14 @@ export default async function handleSignUp(
     let rightLengthPassword = generateRightLengthPassword(input);
 
     try {
-      await updateDoc(doc(db, "emails", input.email), {
+      await setDoc(doc(db, "emails", input.email), {
         name: input.name,
       });
-      console.log(`An email duplication attempt!`);
-      setUserStatus("duplicate email");
-      return;
-    } catch {
-      console.log(`Good, so the email isn't duplicate`);
+    } catch (error) {
+      console.error(`Create the emails DB record – Error code: ${error.code}`);
+      console.error(
+        `Create the emails DB record – Error message: ${error.message}`
+      );
     }
 
     const userCredential = await createUserWithEmailAndPassword(
@@ -54,19 +54,6 @@ export default async function handleSignUp(
       console.error(`Creating the users DB record – Error code: ${error.code}`);
       console.error(
         `Creating the users DB record – Error message: ${error.message}`
-      );
-    }
-
-    try {
-      await setDoc(doc(db, "emails", input.email), {
-        id: user.uid,
-      });
-    } catch (error) {
-      console.error(
-        `Adding an ID to the emails DB record – Error code: ${error.code}`
-      );
-      console.error(
-        `Adding an ID to the emails DB record – Error message: ${error.message}`
       );
     }
 
