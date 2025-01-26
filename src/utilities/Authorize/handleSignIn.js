@@ -39,6 +39,7 @@ export default async function handleSignIn(
         id: doc.id,
       }));
       // Firebase Auth uid is used for consisten storing
+      // a deletion workaround for Firebase to handle deleted users at the login
       if (!activeUsersIDs.map((entry) => entry.id).includes(user.uid)) {
         try {
           await deleteUser(getAuth().currentUser);
@@ -48,13 +49,17 @@ export default async function handleSignIn(
         setUserStatus("deleted");
         setInput({ name: "", email: "", password: "" });
         console.log("Your account has been deleted, lol");
-      } else if (
+      }
+      // blocked users handling at the login
+      else if (
         activeUsersIDs.filter((entry) => entry.id === user.uid)[0].status ===
         "blocked"
       ) {
         setUserStatus("blocked");
         console.log("Your account has been blocked, lol");
-      } else {
+      }
+      // active users handling at the login
+      else {
         await updateDoc(doc(db, "users", user.uid), { lastSeen: new Date() });
         setUserStatus("active");
       }
