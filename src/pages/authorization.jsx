@@ -1,11 +1,10 @@
 import { useState } from "react"
 import { Navigate } from "react-router"
 import determineStatusMessage from "../utilities/Authorize/determineStatusMessage"
-import handleSignUp from "../utilities/Authorize/handleSignUp"
-import handleSignIn from "../utilities/Authorize/handleSignIn"
 import InputSection from "../components/Authorization/InputSection"
 import AuthTypeSwitch from "../components/Authorization/AuthTypeSwitch"
 import determineTexts from "../utilities/Authorize/determineTexts"
+import FormButton from "../components/Authorization/FormButton"
 
 
 export default function Authorization({ user }) {
@@ -47,27 +46,15 @@ export default function Authorization({ user }) {
                     errorMessages={errorMessages}
                 />
 
-                <button
-                    type="button"
-                    className="btn btn-primary w-100"
-                    onClick={authType === "login"
-                        ? () => handleSignIn(
-                            input,
-                            setErrorMessages,
-                            setFirstFocus,
-                            setUserStatus,
-                            setInput
-                        )
-                        : () => handleSignUp(
-                            input,
-                            setErrorMessages,
-                            setFirstFocus,
-                            setUserStatus
-                        )
-                    }
-                >
-                    {determineTexts(authType, "button")}
-                </button>
+                <FormButton
+                    authType={authType}
+                    input={input}
+                    setInput={setInput}
+                    setErrorMessages={setErrorMessages}
+                    setFirstFocus={setFirstFocus}
+                    setUserStatus={setUserStatus}
+                />
+
                 {userStatus &&
                     <div className={`alert ${userStatus === "deleted" ? "alert-danger" : "alert-warning"} StatusNotification`}>
                         {determineStatusMessage(userStatus)}
