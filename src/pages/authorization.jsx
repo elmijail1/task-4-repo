@@ -1,11 +1,11 @@
 import { useState } from "react"
-import { conditionalTexts } from "../data/authorizeUItexts"
 import { Navigate } from "react-router"
-import registerFocus from "../utilities/Authorize/registerFocus"
 import determineStatusMessage from "../utilities/Authorize/determineStatusMessage"
 import handleSignUp from "../utilities/Authorize/handleSignUp"
 import handleSignIn from "../utilities/Authorize/handleSignIn"
 import InputSection from "../components/Authorization/InputSection"
+import AuthTypeSwitch from "../components/Authorization/AuthTypeSwitch"
+import determineTexts from "../utilities/Authorize/determineTexts"
 
 
 export default function Authorization({ user }) {
@@ -24,24 +24,6 @@ export default function Authorization({ user }) {
         setInput((prevInput) => ({ ...prevInput, [name]: value }))
     }
 
-    function changeAuthType() {
-        setAuthType((prevType) => {
-            if (prevType === "login") {
-                return "signup"
-            } else if (prevType === "signup") {
-                return "login"
-            }
-        })
-    }
-
-    function determineTexts(element) {
-        if (authType === "login") {
-            return conditionalTexts.login[element]
-        } else if (authType === "signup") {
-            return conditionalTexts.signup[element]
-        }
-    }
-
     if (user && userStatus === "active") {
         return <Navigate to="/"></Navigate>
     }
@@ -49,14 +31,12 @@ export default function Authorization({ user }) {
     return (
         <div className="container-fluid">
             <form className="mx-auto d-flex flex-column justify-content-center" autoComplete="off">
-                <h1 className="text-center h3">{determineTexts("h1")}</h1>
-                <button
-                    type="button"
-                    className="Auth__SubButton mt-2"
-                    onClick={changeAuthType}
-                >
-                    {determineTexts("sub")}
-                </button>
+                <h1 className="text-center h3">{determineTexts(authType, "h1")}</h1>
+
+                <AuthTypeSwitch
+                    authType={authType}
+                    setAuthType={setAuthType}
+                />
 
                 <InputSection
                     authType={authType}
@@ -86,7 +66,7 @@ export default function Authorization({ user }) {
                         )
                     }
                 >
-                    {determineTexts("button")}
+                    {determineTexts(authType, "button")}
                 </button>
                 {userStatus &&
                     <div className={`alert ${userStatus === "deleted" ? "alert-danger" : "alert-warning"} StatusNotification`}>
